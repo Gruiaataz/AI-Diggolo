@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Diggolo | By Gruia-Alexandru</title>
+    <style>
+        :root { --bg: #0d1117; --card: #161b22; --accent: #58a6ff; --text: #c9d1d9; --user-msg: #238636; }
+        body { background-color: var(--bg); color: var(--text); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .chat-container { width: 95%; max-width: 500px; height: 85vh; background: var(--card); border: 1px solid #30363d; border-radius: 12px; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        header { padding: 15px; background: #21262d; border-bottom: 1px solid #30363d; text-align: center; }
+        #chat-box { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+        .msg { padding: 12px; border-radius: 10px; max-width: 85%; font-size: 15px; line-height: 1.4; }
+        .user { background: var(--user-msg); color: white; align-self: flex-end; }
+        .ai { background: #30363d; align-self: flex-start; border: 1px solid #444; }
+        .input-area { display: flex; padding: 15px; border-top: 1px solid #30363d; background: #161b22; }
+        input { flex: 1; padding: 12px; border: 1px solid #30363d; border-radius: 6px; background: #0d1117; color: white; outline: none; }
+        button { margin-left: 10px; padding: 0 20px; background: var(--accent); border: none; border-radius: 6px; color: white; font-weight: bold; cursor: pointer; }
+        button:disabled { background: #21262d; cursor: not-allowed; }
+        pre { background: #000; color: #7ee787; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: monospace; }
+    </style>
+</head>
+<body>
+
+<div class="chat-container">
+    <header>
+        <strong style="color: var(--accent); font-size: 1.2rem;">AI-Diggolo</strong><br>
+        <small>Creat de Gruia-Alexandru</small>
+    </header>
+    <div id="chat-box">
+        <div class="msg ai">Salut, Gruia! Sunt AI-Diggolo. Sunt gata să scriu scripturi pentru Roblox sau Python. Ce vrei să facem?</div>
+    </div>
+    <div class="input-area">
+        <input type="text" id="userInput" placeholder="Scrie aici mesajul tău...">
+        <button id="sendBtn">Trimite</button>
+    </div>
+</div>
+
+<script>
+    const chatBox = document.getElementById('chat-box');
+    const userInput = document.getElementById('userInput');
+    const sendBtn = document.getElementById('sendBtn');
+
+    // CONFIGURARE TOKEN ȘI MODEL
+    const HF_TOKEN = "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";
+    const MODEL = "facebook/blenderbot-400M-distill"; // Cel mai stabil pentru a evita erorile CORS
+
+    async function sendMessage() {
+        const text = userInput.value.trim();
+        if (!text) return;
+
+        // Afișăm mesajul utilizatorului
+        addMessage(text, 'user');
+        userInput.value = "";
+        
+        // Blocăm butonul până primim răspuns
+        sendBtn.disabled = true;
+        const loadingMsg = addMessage("AI-Diggolo se gândește...", 'ai');
+
+        try {
+            const response = await fetch(`https://api-inference.huggingface.co/models/${MODEL}`, {
+                method: "POST",
+                headers: { 
+                    "Authorization": `Bearer ${HF_TOKEN}`, 
+                    "Content-Type": "application/json" 
+                },
+                body: JSON.stringify({ 
+                    inputs: text,
+                    options: { wait_for_model: true } // Forțează serverul să aștepte încărcarea modelului
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.error) {
+                loadingMsg.innerText = "Sistemul se trezește... Mai apasă o dată butonul peste 10 secunde.";
+            } else {
+                // Extragem textul curat
+                const reply = Array.isArray(data) ? data[0].generated_text : data.generated_text;
+                loadingMsg.innerText = reply || "Am procesat, dar răspunsul a fost gol. Mai încearcă o dată.";
+            }
+        } catch (error) {
+            loadingMsg.innerText = "Eroare de conexiune. Verifică dacă ai internetul activ.";
+        } finally {
+            sendBtn.disabled = false;
+        }
+    }
+
+    function addMessage(text, type) {
+        const div = document.createElement('div');
+        div.className = `msg ${type}`;
+        div.innerText = text;
+        chatBox.appendChild(div);
+        chatBox.scrollTop = chatBox.scrollHeight;
+        return div;
+    }
+
+    sendBtn.onclick = sendMessage;
+    userInput.onkeydown = (e) => { if (e.key === 'Enter') sendMessage(); };
+</script>
+
+</body>
+</html>
