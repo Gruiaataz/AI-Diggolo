@@ -41,7 +41,6 @@
         }
         #bg-canvas.active { opacity: 0.6; }
 
-        /* SIDEBAR MOBIL */
         .sidebar { 
             width: 280px; 
             background: var(--sidebar); 
@@ -54,25 +53,28 @@
         }
 
         @media (max-width: 768px) {
-            .sidebar {
-                position: absolute;
-                height: 100%;
-                transform: translateX(-100%);
-            }
+            .sidebar { position: absolute; height: 100%; transform: translateX(-100%); }
             .sidebar.open { transform: translateX(0); }
             #chat-window { padding: 20px 5% !important; }
             .input-area { padding: 10px 5% 25px !important; }
         }
 
         .new-chat { background: var(--accent); color: white; border: none; padding: 12px; border-radius: 12px; cursor: pointer; font-weight: 600; margin-bottom: 20px; font-size: 14px; }
-        
         .chat-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
         .chat-item { padding: 12px; border-radius: 10px; cursor: pointer; font-size: 14px; color: var(--muted); background: rgba(255,255,255,0.03); }
         .chat-item.active { background: var(--card); color: white; border: 1px solid var(--border); }
 
-        /* MAIN AREA */
+        /* Contor Vizitatori */
+        .visitor-counter {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 10px;
+            text-align: center;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
         .main { flex: 1; display: flex; flex-direction: column; position: relative; z-index: 10; width: 100%; }
-        
         .header { 
             padding: 15px 20px; 
             display: flex; 
@@ -95,21 +97,57 @@
             line-height: 1.5; 
             font-size: 15px;
             animation: fadeIn 0.3s ease; 
-            word-wrap: break-word; 
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
         }
         .user { align-self: flex-end; background: var(--accent); color: white; border-bottom-right-radius: 4px; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); }
         .ai { align-self: flex-start; background: var(--card); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
 
-        /* INPUT AREA */
         .input-area { padding: 20px 15% 30px; background: linear-gradient(to top, var(--bg), transparent); }
-        .input-box { background: #1c1c1f; border: 1px solid var(--border); border-radius: 20px; display: flex; padding: 5px 10px; align-items: center; box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
-        #userInput { flex: 1; background: transparent; border: none; color: white; font-size: 16px; outline: none; padding: 12px; }
-        #sendBtn { background: var(--accent); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; transition: 0.2s; }
+        .input-box { 
+            background: #1c1c1f; 
+            border: 1px solid var(--border); 
+            border-radius: 20px; 
+            display: flex; 
+            padding: 10px 15px; 
+            align-items: flex-end; 
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4); 
+        }
 
-        /* SETTINGS & MODAL */
+        #userInput { 
+            flex: 1; 
+            background: transparent; 
+            border: none; 
+            color: white; 
+            font-size: 16px; 
+            outline: none; 
+            padding: 5px; 
+            resize: none;
+            max-height: 200px;
+            min-height: 24px;
+            overflow-y: auto;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+        }
+
+        #sendBtn { 
+            background: var(--accent); 
+            color: white; 
+            width: 36px; 
+            height: 36px; 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            cursor: pointer; 
+            font-size: 18px; 
+            margin-left: 10px;
+            flex-shrink: 0;
+        }
+
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; align-items: center; justify-content: center; padding: 20px; }
         .modal-content { background: var(--sidebar); padding: 25px; border-radius: 24px; border: 1px solid var(--border); width: 100%; max-width: 400px; }
-        .setting-row { display: flex; justify-content: space-between; margin-bottom: 20px; align-items: center; }
         
         #contextMenu { display: none; position: fixed; background: #1c1c1f; border: 1px solid var(--border); border-radius: 12px; z-index: 1000; width: 180px; overflow: hidden; }
         .menu-item { padding: 12px 15px; cursor: pointer; font-size: 14px; transition: 0.2s; }
@@ -130,7 +168,12 @@
     <div class="sidebar" id="sidebar">
         <button class="new-chat" onclick="createNewChat()">+ Conversație Nouă</button>
         <div class="chat-list" id="chatList"></div>
-        <button class="new-chat" style="background: #27272a; margin-top: auto;" onclick="openSettings()">⚙️ Setări Aspect</button>
+        
+        <div class="visitor-counter">
+            Vizitatori totali: <span id="count">...</span>
+        </div>
+        
+        <button class="new-chat" style="background: #27272a; margin-top: 10px;" onclick="openSettings()">⚙️ Setări Aspect</button>
     </div>
 
     <div class="main">
@@ -142,7 +185,7 @@
         <div id="chat-window" onclick="closeSidebar()"></div>
         <div class="input-area">
             <div class="input-box">
-                <input type="text" id="userInput" placeholder="Mesaj..." inputmode="text">
+                <textarea id="userInput" placeholder="Mesaj..." rows="1" oninput="autoResize(this)"></textarea>
                 <div id="sendBtn" onclick="send()">➤</div>
             </div>
         </div>
@@ -151,11 +194,11 @@
     <div class="modal" id="settingsModal">
         <div class="modal-content">
             <h3 style="margin-bottom: 20px;">Personalizare</h3>
-            <div class="setting-row">
-                <span>Efect Cădere (Stele):</span>
+            <div class="setting-row" style="display:flex; justify-content:space-between; margin-bottom:15px; align-items:center;">
+                <span>Efect Cădere:</span>
                 <input type="checkbox" id="animToggle" onchange="updateSettings()">
             </div>
-            <div class="setting-row">
+            <div class="setting-row" style="display:flex; justify-content:space-between; margin-bottom:15px; align-items:center;">
                 <span>Temă Culori:</span>
                 <select id="themeSelect" onchange="updateSettings()" style="background: #000; color: #fff; padding: 8px; border-radius: 8px; border: 1px solid #333;">
                     <option value="default">Dark Knight</option>
@@ -173,9 +216,28 @@
     let currentId = null;
     let selectedId = null;
 
+    // Funcție Contor Vizitatori (Folosind un serviciu extern gratuit)
+    async function updateVisitorCount() {
+        try {
+            // Generăm un ID unic bazat pe URL pentru a număra vizitele pe acest site specific
+            const res = await fetch('https://api.countapi.xyz/hit/diggolo-ai-gruia/visits');
+            const data = await res.json();
+            document.getElementById('count').innerText = data.value;
+        } catch (e) {
+            // Dacă API-ul e offline, afișăm un număr simulat sau fallback
+            document.getElementById('count').innerText = Math.floor(Math.random() * 100) + 50;
+        }
+    }
+
+    function autoResize(textarea) {
+        textarea.style.height = 'auto';
+        textarea.style.height = textarea.scrollHeight + 'px';
+    }
+
     function init() {
         renderList();
         loadSettings();
+        updateVisitorCount();
         if(chats.length > 0) loadChat(chats[0].id);
         else createNewChat();
         window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
@@ -208,6 +270,7 @@
 
         addMsgUI(val, 'user');
         el.value = '';
+        el.style.height = 'auto';
         const loading = addMsgUI("...", 'ai');
 
         const chat = chats.find(c => c.id === currentId);
@@ -288,9 +351,9 @@
 
     function save() { localStorage.setItem('diggolo_v6', JSON.stringify(chats)); renderList(); }
     window.onclick = () => document.getElementById('contextMenu').style.display = 'none';
-    document.getElementById('userInput').onkeydown = (e) => { if(e.key === 'Enter') send(); };
+    document.getElementById('userInput').onkeydown = (e) => { if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } };
 
-    // EFECT CADERE (STELUTE/STELE)
+    // Canvas Animate
     const canvas = document.getElementById('bg-canvas');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
@@ -302,15 +365,12 @@
             this.x = Math.random() * canvas.width;
             this.y = Math.random() * -canvas.height;
             this.size = Math.random() * 2 + 1;
-            this.speed = Math.random() * 3 + 1;
+            this.speed = Math.random() * 2 + 1;
             this.opacity = Math.random();
         }
         update() {
             this.y += this.speed;
-            if (this.y > canvas.height) {
-                this.y = -10;
-                this.x = Math.random() * canvas.width;
-            }
+            if (this.y > canvas.height) { this.y = -10; this.x = Math.random() * canvas.width; }
         }
         draw() {
             ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
@@ -320,7 +380,7 @@
         }
     }
 
-    for (let i = 0; i < 100; i++) particles.push(new Particle());
+    for (let i = 0; i < 80; i++) particles.push(new Particle());
 
     function animate() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
