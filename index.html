@@ -61,18 +61,10 @@
 
         .new-chat { background: var(--accent); color: white; border: none; padding: 12px; border-radius: 12px; cursor: pointer; font-weight: 600; margin-bottom: 20px; font-size: 14px; }
         .chat-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
-        .chat-item { padding: 12px; border-radius: 10px; cursor: pointer; font-size: 14px; color: var(--muted); background: rgba(255,255,255,0.03); }
+        .chat-item { padding: 12px; border-radius: 10px; cursor: pointer; font-size: 13px; color: var(--muted); background: rgba(255,255,255,0.03); border: 1px solid transparent; transition: 0.2s; }
         .chat-item.active { background: var(--card); color: white; border: 1px solid var(--border); }
 
-        /* Contor Vizitatori */
-        .visitor-counter {
-            font-size: 11px;
-            color: var(--muted);
-            margin-top: 10px;
-            text-align: center;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-        }
+        .visitor-counter { font-size: 11px; color: var(--muted); margin-top: 10px; text-align: center; text-transform: uppercase; }
 
         .main { flex: 1; display: flex; flex-direction: column; position: relative; z-index: 10; width: 100%; }
         .header { 
@@ -91,59 +83,27 @@
         #chat-window { flex: 1; padding: 30px 15%; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; scroll-behavior: smooth; }
         
         .msg { 
-            max-width: 85%; 
-            padding: 12px 16px; 
-            border-radius: 18px; 
-            line-height: 1.5; 
-            font-size: 15px;
-            animation: fadeIn 0.3s ease; 
-            word-wrap: break-word;
-            white-space: pre-wrap;
-            overflow-wrap: anywhere;
+            max-width: 85%; padding: 12px 16px; border-radius: 18px; line-height: 1.5; font-size: 15px;
+            animation: fadeIn 0.3s ease; word-wrap: break-word; white-space: pre-wrap;
         }
-        .user { align-self: flex-end; background: var(--accent); color: white; border-bottom-right-radius: 4px; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); }
+        .user { align-self: flex-end; background: var(--accent); color: white; border-bottom-right-radius: 4px; }
         .ai { align-self: flex-start; background: var(--card); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
 
         .input-area { padding: 20px 15% 30px; background: linear-gradient(to top, var(--bg), transparent); }
         .input-box { 
-            background: #1c1c1f; 
-            border: 1px solid var(--border); 
-            border-radius: 20px; 
-            display: flex; 
-            padding: 10px 15px; 
-            align-items: flex-end; 
-            box-shadow: 0 8px 24px rgba(0,0,0,0.4); 
+            background: #1c1c1f; border: 1px solid var(--border); border-radius: 20px; 
+            display: flex; padding: 10px 15px; align-items: flex-end; 
         }
 
         #userInput { 
-            flex: 1; 
-            background: transparent; 
-            border: none; 
-            color: white; 
-            font-size: 16px; 
-            outline: none; 
-            padding: 5px; 
-            resize: none;
-            max-height: 200px;
-            min-height: 24px;
-            overflow-y: auto;
-            word-wrap: break-word;
-            white-space: pre-wrap;
+            flex: 1; background: transparent; border: none; color: white; font-size: 16px; 
+            outline: none; padding: 5px; resize: none; max-height: 150px;
         }
 
         #sendBtn { 
-            background: var(--accent); 
-            color: white; 
-            width: 36px; 
-            height: 36px; 
-            border-radius: 50%; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            cursor: pointer; 
-            font-size: 18px; 
-            margin-left: 10px;
-            flex-shrink: 0;
+            background: var(--accent); color: white; width: 36px; height: 36px; 
+            border-radius: 50%; display: flex; align-items: center; justify-content: center; 
+            cursor: pointer; margin-left: 10px; flex-shrink: 0;
         }
 
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; align-items: center; justify-content: center; padding: 20px; }
@@ -153,7 +113,7 @@
         .menu-item { padding: 12px 15px; cursor: pointer; font-size: 14px; transition: 0.2s; }
         .menu-item:hover { background: var(--accent); }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
     </style>
 </head>
 <body>
@@ -168,12 +128,8 @@
     <div class="sidebar" id="sidebar">
         <button class="new-chat" onclick="createNewChat()">+ Conversație Nouă</button>
         <div class="chat-list" id="chatList"></div>
-        
-        <div class="visitor-counter">
-            Vizitatori totali: <span id="count">...</span>
-        </div>
-        
-        <button class="new-chat" style="background: #27272a; margin-top: 10px;" onclick="openSettings()">⚙️ Setări Aspect</button>
+        <div class="visitor-counter">Total Vizite: <span id="count">1</span></div>
+        <button class="new-chat" style="background: #27272a; margin-top: 10px;" onclick="openSettings()">⚙️ Setări</button>
     </div>
 
     <div class="main">
@@ -185,7 +141,7 @@
         <div id="chat-window" onclick="closeSidebar()"></div>
         <div class="input-area">
             <div class="input-box">
-                <textarea id="userInput" placeholder="Mesaj..." rows="1" oninput="autoResize(this)"></textarea>
+                <textarea id="userInput" placeholder="Mesaj..." rows="1" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"></textarea>
                 <div id="sendBtn" onclick="send()">➤</div>
             </div>
         </div>
@@ -194,61 +150,44 @@
     <div class="modal" id="settingsModal">
         <div class="modal-content">
             <h3 style="margin-bottom: 20px;">Personalizare</h3>
-            <div class="setting-row" style="display:flex; justify-content:space-between; margin-bottom:15px; align-items:center;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:15px; align-items:center;">
                 <span>Efect Cădere:</span>
                 <input type="checkbox" id="animToggle" onchange="updateSettings()">
             </div>
-            <div class="setting-row" style="display:flex; justify-content:space-between; margin-bottom:15px; align-items:center;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:15px; align-items:center;">
                 <span>Temă Culori:</span>
-                <select id="themeSelect" onchange="updateSettings()" style="background: #000; color: #fff; padding: 8px; border-radius: 8px; border: 1px solid #333;">
+                <select id="themeSelect" onchange="updateSettings()" style="background:#000; color:#fff; padding:8px; border-radius:8px;">
                     <option value="default">Dark Knight</option>
                     <option value="theme-blue">Ocean View</option>
-                    <option value="theme-purple">Galactic Purple</option>
+                    <option value="theme-purple">Deep Purple</option>
                 </select>
             </div>
-            <button class="new-chat" style="width: 100%; margin-top: 10px;" onclick="closeSettings()">Gata</button>
+            <button class="new-chat" style="width: 100%;" onclick="closeSettings()">Închide</button>
         </div>
     </div>
 
 <script>
     const API_KEY = "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";
+    // Cheia de stocare rămâne aceeași pentru a păstra datele vechi
     let chats = JSON.parse(localStorage.getItem('diggolo_v6')) || [];
     let currentId = null;
     let selectedId = null;
 
-    // Funcție Contor Vizitatori (Folosind un serviciu extern gratuit)
-    async function updateVisitorCount() {
-        try {
-            // Generăm un ID unic bazat pe URL pentru a număra vizitele pe acest site specific
-            const res = await fetch('https://api.countapi.xyz/hit/diggolo-ai-gruia/visits');
-            const data = await res.json();
-            document.getElementById('count').innerText = data.value;
-        } catch (e) {
-            // Dacă API-ul e offline, afișăm un număr simulat sau fallback
-            document.getElementById('count').innerText = Math.floor(Math.random() * 100) + 50;
-        }
-    }
-
-    function autoResize(textarea) {
-        textarea.style.height = 'auto';
-        textarea.style.height = textarea.scrollHeight + 'px';
-    }
-
     function init() {
         renderList();
         loadSettings();
-        updateVisitorCount();
         if(chats.length > 0) loadChat(chats[0].id);
         else createNewChat();
-        window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
     }
 
-    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
-    function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); }
+    function save() { 
+        localStorage.setItem('diggolo_v6', JSON.stringify(chats)); 
+        renderList(); 
+    }
 
     function createNewChat() {
         const id = Date.now();
-        chats.unshift({ id, title: "Chat Nou", messages: [{ role: "system", content: "Ești Diggolo AI. Autor: Gruia." }] });
+        chats.unshift({ id, title: "Conversație Nouă", messages: [{ role: "system", content: "Ești Diggolo AI." }] });
         save();
         loadChat(id);
     }
@@ -275,7 +214,10 @@
 
         const chat = chats.find(c => c.id === currentId);
         chat.messages.push({ role: "user", content: val });
-        if(chat.title === "Chat Nou") chat.title = val.substring(0, 20);
+        
+        // Actualizăm titlul automat dacă e cel default
+        if(chat.title === "Conversație Nouă") chat.title = val.substring(0, 25);
+        save(); // Salvăm imediat după mesajul userului
 
         try {
             const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -285,10 +227,11 @@
             });
             const data = await res.json();
             const reply = data.choices[0].message.content;
+            
             chat.messages.push({ role: "assistant", content: reply });
             loading.innerText = reply;
-            save();
-        } catch (e) { loading.innerText = "Eroare."; }
+            save(); // Salvăm din nou după răspunsul AI-ului
+        } catch (e) { loading.innerText = "Eroare de conexiune."; }
     }
 
     function addMsgUI(txt, role) {
@@ -320,8 +263,11 @@
         });
     }
 
+    // Settings
     function openSettings() { document.getElementById('settingsModal').style.display = 'flex'; }
     function closeSettings() { document.getElementById('settingsModal').style.display = 'none'; }
+    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+    function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); }
     
     function updateSettings() {
         const anim = document.getElementById('animToggle').checked;
@@ -349,45 +295,23 @@
         chats.length > 0 ? loadChat(chats[0].id) : createNewChat();
     }
 
-    function save() { localStorage.setItem('diggolo_v6', JSON.stringify(chats)); renderList(); }
     window.onclick = () => document.getElementById('contextMenu').style.display = 'none';
     document.getElementById('userInput').onkeydown = (e) => { if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } };
 
-    // Canvas Animate
+    // Canvas Animate (Stele)
     const canvas = document.getElementById('bg-canvas');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-
     let particles = [];
-    class Particle {
-        constructor() {
-            this.x = Math.random() * canvas.width;
-            this.y = Math.random() * -canvas.height;
-            this.size = Math.random() * 2 + 1;
-            this.speed = Math.random() * 2 + 1;
-            this.opacity = Math.random();
-        }
-        update() {
-            this.y += this.speed;
-            if (this.y > canvas.height) { this.y = -10; this.x = Math.random() * canvas.width; }
-        }
-        draw() {
-            ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-            ctx.fill();
-        }
+    class P {
+        constructor() { this.x = Math.random()*canvas.width; this.y = Math.random()*canvas.height; this.s = Math.random()*2; this.v = Math.random()*2+1; }
+        u() { this.y += this.v; if(this.y > canvas.height) this.y = -10; }
+        d() { ctx.fillStyle = "white"; ctx.beginPath(); ctx.arc(this.x, this.y, this.s, 0, Math.PI*2); ctx.fill(); }
     }
-
-    for (let i = 0; i < 80; i++) particles.push(new Particle());
-
-    function animate() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        particles.forEach(p => { p.update(); p.draw(); });
-        requestAnimationFrame(animate);
-    }
-    animate();
+    for(let i=0; i<80; i++) particles.push(new P());
+    function anim() { ctx.clearRect(0,0,canvas.width, canvas.height); particles.forEach(p=>{p.u();p.d();}); requestAnimationFrame(anim); }
+    anim();
     init();
 </script>
 </body>
