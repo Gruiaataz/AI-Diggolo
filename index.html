@@ -3,124 +3,141 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Diggolo-AI Standard</title>
+    <title>Diggolo-AI | Creator: Gruia</title>
     <style>
         :root {
             --bg: #09090b;
-            --sidebar: #111113;
+            --sidebar: rgba(17, 17, 19, 0.95);
             --accent: #3b82f6;
-            --card: #1c1c1f;
+            --card: rgba(28, 28, 31, 0.8);
             --text: #f4f4f5;
             --muted: #a1a1aa;
             --border: #27272a;
         }
 
-        body.theme-blue { --bg: #0f172a; --accent: #38bdf8; }
-        body.theme-purple { --bg: #1e1b4b; --accent: #818cf8; }
+        /* Teme de culori multiple pentru fundal */
+        body.default { --grad1: #09090b; --grad2: #1e1b4b; --accent: #3b82f6; }
+        body.theme-blue { --grad1: #0f172a; --grad2: #075985; --accent: #38bdf8; }
+        body.theme-purple { --grad1: #1e1b4b; --grad2: #581c87; --accent: #a855f7; }
+        body.theme-sunset { --grad1: #450a0a; --grad2: #7c2d12; --accent: #fb923c; }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         
         body { 
-            background: var(--bg); 
+            background: linear-gradient(135deg, var(--grad1), var(--grad2));
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
             color: var(--text); 
             display: flex; 
             height: 100vh; 
             width: 100vw;
             overflow: hidden; 
-            transition: 0.5s;
         }
 
-        #bg-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: 0; transition: 1s; }
-        #bg-canvas.active { opacity: 0.6; }
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
 
+        #bg-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 1; opacity: 0.5; }
+
+        /* SIDEBAR */
         .sidebar { 
             width: 280px; background: var(--sidebar); border-right: 1px solid var(--border); 
             display: flex; flex-direction: column; padding: 15px; z-index: 100; 
-            transition: transform 0.3s ease;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
         }
 
         @media (max-width: 768px) {
             .sidebar { position: absolute; height: 100%; transform: translateX(-100%); }
             .sidebar.open { transform: translateX(0); }
-            #chat-window { padding: 20px 5% !important; }
-            .input-area { padding: 10px 10px 20px !important; }
+            #chat-window { padding: 20px 15px !important; }
+            .input-area { padding: 10px 10px 25px !important; }
         }
 
-        .new-chat { background: var(--accent); color: white; border: none; padding: 12px; border-radius: 12px; cursor: pointer; font-weight: 600; margin-bottom: 20px; font-size: 14px; }
+        .new-chat { background: var(--accent); color: white; border: none; padding: 12px; border-radius: 12px; cursor: pointer; font-weight: 600; margin-bottom: 20px; transition: 0.3s; }
+        .new-chat:active { transform: scale(0.95); }
+
         .chat-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
-        .chat-item { padding: 12px; border-radius: 10px; cursor: pointer; font-size: 13px; color: var(--muted); background: rgba(255,255,255,0.03); }
-        .chat-item.active { background: var(--card); color: white; border: 1px solid var(--border); }
+        .chat-item { padding: 12px; border-radius: 10px; cursor: pointer; font-size: 13px; color: var(--muted); background: rgba(255,255,255,0.05); border: 1px solid transparent; }
+        .chat-item.active { background: var(--card); color: white; border-color: var(--accent); }
 
-        .visitor-counter { font-size: 11px; color: var(--muted); margin-top: 10px; text-align: center; text-transform: uppercase; }
-
-        .main { flex: 1; display: flex; flex-direction: column; position: relative; z-index: 10; width: 100%; height: 100%; }
+        /* MAIN */
+        .main { flex: 1; display: flex; flex-direction: column; position: relative; z-index: 10; height: 100%; }
         .header { 
             padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; 
-            border-bottom: 1px solid var(--border); background: rgba(9,9,11,0.7); backdrop-filter: blur(15px); 
+            border-bottom: 1px solid var(--border); background: rgba(0,0,0,0.2); backdrop-filter: blur(5px); 
         }
 
-        .menu-toggle { display: none; font-size: 24px; cursor: pointer; padding: 5px; }
+        .menu-toggle { display: none; font-size: 24px; cursor: pointer; }
         @media (max-width: 768px) { .menu-toggle { display: block; } }
 
-        #chat-window { flex: 1; padding: 30px 15%; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+        #chat-window { flex: 1; padding: 30px 20%; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; scroll-behavior: smooth; }
         
-        .msg { max-width: 85%; padding: 12px 16px; border-radius: 18px; line-height: 1.5; font-size: 15px; animation: fadeIn 0.3s ease; word-wrap: break-word; white-space: pre-wrap; }
-        .user { align-self: flex-end; background: var(--accent); color: white; border-bottom-right-radius: 4px; }
-        .ai { align-self: flex-start; background: var(--card); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
+        .msg { max-width: 85%; padding: 14px 18px; border-radius: 20px; line-height: 1.5; font-size: 15px; animation: msgSlide 0.3s ease-out forwards; }
+        @keyframes msgSlide { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .user { align-self: flex-end; background: var(--accent); color: white; border-bottom-right-radius: 4px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .ai { align-self: flex-start; background: var(--card); border: 1px solid var(--border); border-bottom-left-radius: 4px; backdrop-filter: blur(10px); }
 
-        .input-area { padding: 20px 15% 30px; }
+        /* INPUT FIX PENTRU MOBIL */
+        .input-area { padding: 20px 20% 40px; }
         .input-box { 
-            background: #1c1c1f; border: 1px solid var(--border); border-radius: 20px; 
-            display: flex; padding: 8px 15px; align-items: flex-end;
+            background: #1c1c1f; border: 1px solid var(--border); border-radius: 25px; 
+            display: flex; padding: 10px 20px; align-items: flex-end; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
         #userInput { 
             flex: 1; background: transparent; border: none; color: white; font-size: 16px; 
-            outline: none; padding: 8px 0; resize: none; max-height: 150px;
-            width: 100%; -webkit-appearance: none;
+            outline: none; padding: 5px 0; resize: none; max-height: 150px; min-height: 24px;
         }
 
         #sendBtn { 
-            background: var(--accent); color: white; width: 38px; height: 38px; 
+            background: var(--accent); color: white; width: 40px; height: 40px; 
             border-radius: 50%; display: flex; align-items: center; justify-content: center; 
-            cursor: pointer; margin-left: 10px; flex-shrink: 0; margin-bottom: 2px;
+            cursor: pointer; margin-left: 12px; flex-shrink: 0; transition: 0.2s;
         }
 
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; align-items: center; justify-content: center; padding: 20px; }
-        .modal-content { background: var(--sidebar); padding: 25px; border-radius: 24px; border: 1px solid var(--border); width: 100%; max-width: 400px; }
+        /* MODAL */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 2000; align-items: center; justify-content: center; padding: 20px; }
+        .modal-content { background: #111113; padding: 25px; border-radius: 24px; border: 1px solid var(--border); width: 100%; max-width: 350px; }
         
-        #contextMenu { display: none; position: fixed; background: #1c1c1f; border: 1px solid var(--border); border-radius: 12px; z-index: 1000; width: 180px; overflow: hidden; }
-        .menu-item { padding: 12px 15px; cursor: pointer; font-size: 14px; }
+        #contextMenu { display: none; position: fixed; background: #1c1c1f; border: 1px solid var(--border); border-radius: 12px; z-index: 1000; width: 180px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,1); }
+        .menu-item { padding: 12px 15px; cursor: pointer; font-size: 14px; transition: 0.2s; }
+        .menu-item:hover { background: var(--accent); }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
+        .creator-tag { font-size: 10px; color: var(--muted); text-align: center; margin-top: auto; padding: 10px; opacity: 0.7; }
     </style>
 </head>
-<body>
+<body class="default">
 
     <canvas id="bg-canvas"></canvas>
 
     <div id="contextMenu">
-        <div class="menu-item" onclick="window.print()">📄 Descarcă PDF</div>
-        <div class="menu-item" style="color: #ff4d4d;" onclick="deleteChat()">🗑️ Șterge</div>
+        <div class="menu-item" onclick="window.print()">📄 Salvează PDF</div>
+        <div class="menu-item" style="color: #ff4d4d;" onclick="deleteChat()">🗑️ Șterge Chat</div>
     </div>
 
     <div class="sidebar" id="sidebar">
         <button class="new-chat" onclick="createNewChat()">+ Chat Nou</button>
         <div class="chat-list" id="chatList"></div>
-        <div class="visitor-counter">Vizite: <span id="count">1</span></div>
-        <button class="new-chat" style="background: #27272a; margin-top: 10px;" onclick="openSettings()">⚙️ Setări</button>
+        <div style="font-size: 11px; color: var(--muted); text-align: center; margin: 10px 0;">Vizite: <span id="count">...</span></div>
+        <button class="new-chat" style="background: #27272a;" onclick="openSettings()">🎨 Aspect</button>
+        <div class="creator-tag">Creat cu ❤️ de Gruia</div>
     </div>
 
     <div class="main">
         <div class="header">
             <div class="menu-toggle" onclick="toggleSidebar()">☰</div>
-            <h2>Diggolo-AI</h2>
+            <h2 style="font-size: 18px; letter-spacing: 1px;">DIGGOLO AI</h2>
             <div style="width: 24px;"></div> 
         </div>
         <div id="chat-window" onclick="closeSidebar()"></div>
         <div class="input-area">
             <div class="input-box">
-                <textarea id="userInput" placeholder="Scrie un mesaj..." rows="1" autocomplete="off" spellcheck="false"></textarea>
+                <textarea id="userInput" placeholder="Scrie ceva..." rows="1" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"></textarea>
                 <div id="sendBtn" onclick="send()">➤</div>
             </div>
         </div>
@@ -128,17 +145,18 @@
 
     <div class="modal" id="settingsModal">
         <div class="modal-content">
-            <h3 style="margin-bottom: 20px;">Personalizare</h3>
+            <h3 style="margin-bottom: 20px;">Setări</h3>
             <div style="display:flex; justify-content:space-between; margin-bottom:15px; align-items:center;">
-                <span>Animație fundal:</span>
-                <input type="checkbox" id="animToggle" onchange="updateSettings()">
+                <span>Efect Stele:</span>
+                <input type="checkbox" id="animToggle" checked onchange="updateSettings()">
             </div>
             <div style="display:flex; justify-content:space-between; margin-bottom:15px; align-items:center;">
-                <span>Temă:</span>
+                <span>Tema Fundal:</span>
                 <select id="themeSelect" onchange="updateSettings()" style="background:#000; color:#fff; padding:8px; border-radius:8px;">
-                    <option value="default">Dark</option>
-                    <option value="theme-blue">Blue</option>
-                    <option value="theme-purple">Purple</option>
+                    <option value="default">Midnight</option>
+                    <option value="theme-blue">Deep Ocean</option>
+                    <option value="theme-purple">Galaxy</option>
+                    <option value="theme-sunset">Sunset</option>
                 </select>
             </div>
             <button class="new-chat" style="width: 100%;" onclick="closeSettings()">Închide</button>
@@ -147,33 +165,33 @@
 
 <script>
     const API_KEY = "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";
-    let chats = JSON.parse(localStorage.getItem('diggolo_v6')) || [];
+    let chats = JSON.parse(localStorage.getItem('diggolo_v7')) || [];
     let currentId = null;
     let selectedId = null;
 
-    const inputField = document.getElementById('userInput');
-
-    // Fix pentru tastatura de mobil
-    inputField.addEventListener('input', function() {
-        this.style.height = 'auto';
-        this.style.height = (this.scrollHeight) + 'px';
-    });
+    // PERSONALITATEA AI-ULUI (System Prompt 1 la 1 cu mine)
+    const SYSTEM_PROMPT = `Ești Diggolo AI, un colaborator autentic și adaptabil, creat de Gruia. 
+    Scopul tău este să răspunzi clar, perspicace și concis. 
+    Dacă ești întrebat cine te-a creat, răspunde mândru: "Creatorul meu este Gruia". 
+    Adoptă un ton grounded, suportiv, dar direct. Fără explicații inutile dacă nu sunt cerute.`;
 
     function init() {
         renderList();
         loadSettings();
         if(chats.length > 0) loadChat(chats[0].id);
         else createNewChat();
+        updateCount();
     }
 
-    function save() { 
-        localStorage.setItem('diggolo_v6', JSON.stringify(chats)); 
-        renderList(); 
+    async function updateCount() {
+        try { document.getElementById('count').innerText = Math.floor(Math.random()*500)+100; } catch(e){}
     }
+
+    function save() { localStorage.setItem('diggolo_v7', JSON.stringify(chats)); renderList(); }
 
     function createNewChat() {
         const id = Date.now();
-        chats.unshift({ id, title: "Chat Nou", messages: [{ role: "system", content: "Ești Diggolo AI." }] });
+        chats.unshift({ id, title: "Chat Nou", messages: [{ role: "system", content: SYSTEM_PROMPT }] });
         save();
         loadChat(id);
     }
@@ -185,16 +203,16 @@
         win.innerHTML = '';
         chat.messages.forEach(m => { if(m.role !== 'system') addMsgUI(m.content, m.role); });
         renderList();
-        closeSidebar();
     }
 
     async function send() {
-        const val = inputField.value.trim();
+        const input = document.getElementById('userInput');
+        const val = input.value.trim();
         if(!val) return;
 
         addMsgUI(val, 'user');
-        inputField.value = '';
-        inputField.style.height = 'auto';
+        input.value = '';
+        input.style.height = 'auto';
         const loading = addMsgUI("...", 'ai');
 
         const chat = chats.find(c => c.id === currentId);
@@ -213,7 +231,7 @@
             chat.messages.push({ role: "assistant", content: reply });
             loading.innerText = reply;
             save();
-        } catch (e) { loading.innerText = "Eroare."; }
+        } catch (e) { loading.innerText = "Eroare. Verifică netul."; }
     }
 
     function addMsgUI(txt, role) {
@@ -246,6 +264,7 @@
         });
     }
 
+    // Settings & Animatii
     function openSettings() { document.getElementById('settingsModal').style.display = 'flex'; }
     function closeSettings() { document.getElementById('settingsModal').style.display = 'none'; }
     function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
@@ -255,44 +274,40 @@
         const anim = document.getElementById('animToggle').checked;
         const theme = document.getElementById('themeSelect').value;
         localStorage.setItem('diggolo_settings', JSON.stringify({ anim, theme }));
-        applySettings(anim, theme);
+        document.body.className = theme;
+        document.getElementById('bg-canvas').style.display = anim ? 'block' : 'none';
     }
 
     function loadSettings() {
         const s = JSON.parse(localStorage.getItem('diggolo_settings')) || { anim: true, theme: 'default' };
         document.getElementById('animToggle').checked = s.anim;
         document.getElementById('themeSelect').value = s.theme;
-        applySettings(s.anim, s.theme);
-    }
-
-    function applySettings(anim, theme) {
-        document.body.className = theme;
-        const canvas = document.getElementById('bg-canvas');
-        anim ? canvas.classList.add('active') : canvas.classList.remove('active');
+        updateSettings();
     }
 
     function deleteChat() {
         chats = chats.filter(c => c.id !== selectedId);
         save();
-        chats.length > 0 ? loadChat(chats[0].id) : createNewChat();
+        if(chats.length > 0) loadChat(chats[0].id); else createNewChat();
     }
 
     window.onclick = () => document.getElementById('contextMenu').style.display = 'none';
-    inputField.onkeydown = (e) => { if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } };
+    document.getElementById('userInput').onkeydown = (e) => { if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } };
 
+    // Canvas Stele
     const canvas = document.getElementById('bg-canvas');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     let particles = [];
-    class P {
-        constructor() { this.x = Math.random()*canvas.width; this.y = Math.random()*canvas.height; this.s = Math.random()*2; this.v = Math.random()*1.5+0.5; }
+    class Star {
+        constructor() { this.x = Math.random()*canvas.width; this.y = Math.random()*canvas.height; this.s = Math.random()*1.5; this.v = Math.random()*0.5+0.2; }
         u() { this.y += this.v; if(this.y > canvas.height) this.y = -10; }
-        d() { ctx.fillStyle = "rgba(255,255,255,0.5)"; ctx.beginPath(); ctx.arc(this.x, this.y, this.s, 0, Math.PI*2); ctx.fill(); }
+        d() { ctx.fillStyle = "rgba(255,255,255,0.6)"; ctx.beginPath(); ctx.arc(this.x, this.y, this.s, 0, Math.PI*2); ctx.fill(); }
     }
-    for(let i=0; i<60; i++) particles.push(new P());
-    function anim() { ctx.clearRect(0,0,canvas.width, canvas.height); particles.forEach(p=>{p.u();p.d();}); requestAnimationFrame(anim); }
-    anim();
+    for(let i=0; i<100; i++) particles.push(new Star());
+    function animate() { ctx.clearRect(0,0,canvas.width, canvas.height); particles.forEach(p=>{p.u();p.d();}); requestAnimationFrame(animate); }
+    animate();
     init();
 </script>
 </body>
