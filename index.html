@@ -3,247 +3,182 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI-Diggolo Pro | Memory Edition</title>
+    <title>Diggolo-AI Standard</title>
     <style>
-        :root { 
-            --bg: #0d1117; 
-            --card: #161b22; 
-            --accent: #58a6ff; 
-            --text: #c9d1d9; 
-            --green: #238636; 
-            --border: #30363d;
-            --header-bg: #21262d;
+        :root {
+            --bg-main: #0e0e10;
+            --bg-side: #171719;
+            --accent: #3b82f6;
+            --text-primary: #ececec;
+            --text-secondary: #b4b4b4;
+            --border: #303030;
+            --hover: #2a2a2d;
         }
 
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: var(--bg-main); color: var(--text-primary); font-family: 'Inter', sans-serif; display: flex; height: 100vh; overflow: hidden; }
 
-        body { 
-            background: var(--bg); 
-            color: var(--text); 
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
-            display: flex; 
-            flex-direction: column;
-            justify-content: center; 
-            align-items: center; 
-            height: 100vh; 
-            margin: 0; 
-            overflow: hidden;
-        }
+        /* Sidebar */
+        .sidebar { width: 260px; background: var(--bg-side); display: flex; flex-direction: column; padding: 10px; border-right: 1px solid var(--border); transition: all 0.3s ease; }
+        .new-chat-btn { border: 1px solid var(--border); padding: 12px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: 0.2s; font-weight: 500; margin-bottom: 20px; }
+        .new-chat-btn:hover { background: var(--hover); }
+        
+        .history-section { flex: 1; overflow-y: auto; margin-top: 10px; }
+        .history-item { padding: 10px; border-radius: 6px; cursor: pointer; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-secondary); }
+        .history-item:hover { background: var(--hover); color: white; }
 
-        .container { 
-            width: 95%; 
-            max-width: 650px; 
-            height: 90vh; 
-            background: var(--card); 
-            border: 1px solid var(--border); 
-            border-radius: 16px; 
-            display: flex; 
-            flex-direction: column; 
-            overflow: hidden; 
-            box-shadow: 0 20px 50px rgba(0,0,0,0.6); 
-        }
+        .sidebar-footer { border-top: 1px solid var(--border); padding-top: 10px; display: flex; flex-direction: column; gap: 5px; }
+        .btn-side { padding: 10px; border-radius: 6px; cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 10px; }
+        .btn-side:hover { background: var(--hover); }
+        .pro-btn { background: linear-gradient(45deg, #6366f1, #a855f7); color: white; font-weight: bold; border: none; margin-bottom: 5px; animation: glow 2s infinite; }
 
-        header { 
-            padding: 15px; 
-            background: var(--header-bg); 
-            border-bottom: 1px solid var(--border); 
-            text-align: center;
-        }
+        /* Main Chat */
+        .main-content { flex: 1; display: flex; flex-direction: column; position: relative; }
+        .top-bar { padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; background: rgba(14, 14, 16, 0.8); backdrop-filter: blur(10px); z-index: 10; }
+        .login-btn { background: var(--accent); color: white; border: none; padding: 8px 18px; border-radius: 20px; font-weight: 600; cursor: pointer; }
 
-        header h1 { margin: 0; font-size: 1.4rem; color: var(--accent); letter-spacing: 1px; }
-        header p { margin: 5px 0 0; font-size: 0.85rem; opacity: 0.7; }
+        #chat-container { flex: 1; padding: 40px 15% 150px 15%; overflow-y: auto; scroll-behavior: smooth; }
+        .msg { max-width: 85%; margin-bottom: 30px; line-height: 1.6; animation: slideUp 0.4s ease forwards; }
+        .user-msg { align-self: flex-end; color: white; font-weight: 500; border-left: 2px solid var(--accent); padding-left: 15px; }
+        .ai-msg { align-self: flex-start; background: transparent; }
 
-        #chat { 
-            flex: 1; 
-            padding: 20px; 
-            overflow-y: auto; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 15px; 
-            background-image: radial-gradient(circle at 2px 2px, #1f242c 1px, transparent 0);
-            background-size: 24px 24px;
-        }
+        .input-wrapper { position: absolute; bottom: 0; left: 0; right: 0; padding: 20px 15% 40px 15%; background: linear-gradient(transparent, var(--bg-main) 30%); }
+        .input-box { background: #212123; border: 1px solid var(--border); border-radius: 16px; display: flex; align-items: center; padding: 10px 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        input { flex: 1; background: transparent; border: none; color: white; font-size: 16px; outline: none; padding: 10px; }
+        .send-icon { color: var(--accent); cursor: pointer; padding: 5px; border-radius: 8px; }
 
-        .msg { 
-            padding: 14px 18px; 
-            border-radius: 14px; 
-            font-size: 15px; 
-            line-height: 1.5;
-            max-width: 85%; 
-            position: relative; 
-            animation: fadeIn 0.3s ease;
-        }
+        /* Code Block */
+        pre { background: #000; padding: 20px; border-radius: 10px; border: 1px solid #333; position: relative; margin: 15px 0; overflow-x: auto; }
+        .copy-btn { position: absolute; top: 10px; right: 10px; background: #333; color: #ccc; border: none; padding: 5px 10px; border-radius: 5px; font-size: 11px; cursor: pointer; }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .user { background: var(--green); align-self: flex-end; color: white; border-bottom-right-radius: 2px; }
-        .ai { background: #2d333b; align-self: flex-start; border: 1px solid var(--border); border-bottom-left-radius: 2px; width: 100%; }
-
-        pre { 
-            background: #000; 
-            color: #7ee787; 
-            padding: 40px 15px 15px; 
-            border-radius: 8px; 
-            overflow-x: auto; 
-            position: relative; 
-            margin-top: 10px; 
-            border: 1px solid #444;
-            font-family: 'Consolas', monospace;
-            font-size: 13px;
-        }
-
-        .copy-btn { 
-            position: absolute; top: 8px; right: 8px; 
-            background: rgba(88, 166, 255, 0.2); 
-            color: var(--accent); border: 1px solid var(--accent); 
-            padding: 4px 12px; border-radius: 4px; cursor: pointer; 
-            font-size: 11px; font-weight: bold;
-        }
-
-        .explanation {
-            margin-top: 10px;
-            padding: 12px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            border-left: 3px solid var(--accent);
-            font-size: 14px;
-            color: #accff1;
-        }
-
-        .input-area { 
-            display: flex; 
-            padding: 20px; 
-            background: var(--header-bg); 
-            border-top: 1px solid var(--border); 
-            gap: 10px;
-        }
-
-        input { 
-            flex: 1; 
-            padding: 14px; 
-            border: 1px solid var(--border); 
-            border-radius: 8px; 
-            background: var(--bg); 
-            color: white; 
-            outline: none; 
-        }
-
-        button#send { 
-            padding: 0 25px; 
-            background: var(--accent); 
-            border: none; 
-            border-radius: 8px; 
-            color: white; 
-            font-weight: bold; 
-            cursor: pointer; 
-        }
-
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 10px; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes glow { 0% { box-shadow: 0 0 5px rgba(168, 85, 247, 0.4); } 50% { box-shadow: 0 0 15px rgba(168, 85, 247, 0.8); } 100% { box-shadow: 0 0 5px rgba(168, 85, 247, 0.4); } }
+        
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <header>
-        <h1>AI-DIGGOLO PRO</h1>
-        <p>Author: <strong>Gruia-Alex</strong></p>
-    </header>
-    <div id="chat">
-        <div class="msg ai">Salut! Sunt Diggolo AI. Acum am memorie și îți pot explica tot ce fac pas cu pas. Cu ce începem?</div>
+    <div class="sidebar">
+        <div class="new-chat-btn" onclick="location.reload()">
+            <span>+</span> Chat Nou
+        </div>
+        <input type="text" placeholder="Caută titlu..." id="searchChat" style="font-size: 12px; margin-bottom: 10px; border-radius: 5px; background: #212123; padding: 8px; border: 1px solid #333;">
+        <div class="history-section" id="history">
+            <div class="history-item">Script Roblox - Day/Night</div>
+            <div class="history-item">Author Info - Gruia</div>
+        </div>
+        <div class="sidebar-footer">
+            <button class="btn-side pro-btn">✨ Buy Diggolo Pro</button>
+            <div class="btn-side">⚙️ Setări</div>
+            <div class="btn-side">❓ Ajutor</div>
+        </div>
     </div>
-    <div class="input-area">
-        <input type="text" id="in" placeholder="Scrie un mesaj sau cere un ajutor..." autocomplete="off">
-        <button id="send">Trimite</button>
+
+    <div class="main-content">
+        <div class="top-bar">
+            <h2 style="font-size: 18px; font-weight: 700;">Diggolo-AI <span style="color:var(--accent)">Standard</span></h2>
+            <button class="login-btn" onclick="alert('Funcția de login va fi disponibilă în curând!')">Log in</button>
+        </div>
+
+        <div id="chat-container" style="display: flex; flex-direction: column;">
+            <div class="msg ai-msg">Salut! Sunt Diggolo-AI. Cum te pot ajuta astăzi?</div>
+        </div>
+
+        <div class="input-wrapper">
+            <div class="input-box">
+                <input type="text" id="userInput" placeholder="Întreabă Diggolo-AI..." autocomplete="off">
+                <div class="send-icon" id="sendBtn">➤</div>
+            </div>
+        </div>
     </div>
-</div>
 
 <script>
-    const chat = document.getElementById('chat');
-    const input = document.getElementById('in');
-    const btn = document.getElementById('send');
+    const chatContainer = document.getElementById('chat-container');
+    const userInput = document.getElementById('userInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const historyBox = document.getElementById('history');
 
-    // Memoria conversației (Context)
-    let history = [
-        {
-            role: "system", 
-            content: "Ești Diggolo AI. Autorul tău este Gruia (gruiaa69). REGRULI: 1. Dacă ești întrebat de autor, spune cine e Gruia. 2. Când oferi o soluție (cod sau sfat), explică-i utilizatorului EXACT ce ai făcut și cum să aplice soluția. 3. Dacă e un script, pune '-- Author: Diggolo AI' la început. 4. Menține un ton prietenos și reține contextul discuției."
-        }
+    const API_KEY = "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";
+    let chatHistory = [
+        { role: "system", content: "Ești Diggolo AI. Autorul tău este Gruia (gruiaa69). REGRULI: 1. Dacă ești întrebat de autor, spune cine e Gruia. 2. Când oferi o soluție, explică-i scurt cum să aplice. 3. Dacă e un script, pune '-- Author: Diggolo AI' la început. 4. Menține un ton profi și memorează contextul." }
     ];
 
-    const API_KEY = "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"; 
+    async function handleMessage() {
+        const text = userInput.value.trim();
+        if (!text) return;
 
-    async function ask() {
-        const val = input.value.trim();
-        if(!val) return;
-
-        addMsg(val, 'user');
-        history.push({role: "user", content: val});
-        input.value = "";
+        addMessage(text, 'user-msg');
+        userInput.value = "";
         
-        const loading = addMsg("Se Incarca Mesaj-ul...", 'ai');
+        const loadingDiv = addMessage("Diggolo-AI scrie...", 'ai-msg');
+        chatHistory.push({ role: "user", content: text });
 
         try {
             const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                 method: "POST",
                 headers: { "Authorization": `Bearer ${API_KEY}`, "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    model: "llama-3.3-70b-versatile",
-                    messages: history,
-                    temperature: 0.7
-                })
+                body: JSON.stringify({ model: "llama-3.3-70b-versatile", messages: chatHistory })
             });
 
             const data = await res.json();
             const reply = data.choices[0].message.content;
-            history.push({role: "assistant", content: reply});
+            chatHistory.push({ role: "assistant", content: reply });
+
+            // Formatare cod și adăugare în istoric sidebar
+            if(text.length > 5) updateSidebar(text);
             
-            // Formatare specială pentru cod + explicații
-            if(reply.includes("```")) {
-                const parts = reply.split(/```/);
-                let formattedHtml = "";
-                
-                parts.forEach((part, index) => {
-                    if (index % 2 === 1) { // Este bloc de cod
-                        const code = part.replace(/^[a-z]+\n/i, "").trim();
-                        formattedHtml += `<pre><code>${code}</code><button class="copy-btn" onclick="copyToClipboard(this)">Copy Script</button></pre>`;
-                    } else { // Este text explicativ
-                        if(part.trim()) {
-                            formattedHtml += `<div class="explanation">${part.trim().replace(/\n/g, "<br>")}</div>`;
-                        }
-                    }
-                });
-                loading.innerHTML = formattedHtml;
-            } else {
-                loading.innerText = reply;
-            }
-
+            formatAIResponse(loadingDiv, reply);
         } catch (e) {
-            loading.innerText = "Eroare! Verifica conexiunea.";
+            loadingDiv.innerText = "Eroare de conexiune. Reîncearcă.";
         }
-        chat.scrollTop = chat.scrollHeight;
     }
 
-    function addMsg(t, c) {
-        const d = document.createElement('div');
-        d.className = `msg ${c}`;
-        d.innerText = t;
-        chat.appendChild(d);
-        chat.scrollTop = chat.scrollHeight;
-        return d;
+    function addMessage(text, type) {
+        const div = document.createElement('div');
+        div.className = `msg ${type}`;
+        div.innerText = text;
+        chatContainer.appendChild(div);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+        return div;
     }
 
-    function copyToClipboard(button) {
-        const code = button.previousElementSibling.innerText;
-        navigator.clipboard.writeText(code).then(() => {
-            button.innerText = "Copied!";
-            setTimeout(() => { button.innerText = "Copy Script"; }, 2000);
-        });
+    function formatAIResponse(element, text) {
+        if (text.includes("```")) {
+            const parts = text.split(/```/);
+            let finalHtml = "";
+            parts.forEach((part, i) => {
+                if (i % 2 === 1) {
+                    const code = part.replace(/^[a-z]+\n/i, "").trim();
+                    finalHtml += `<pre><code>${code}</code><button class="copy-btn" onclick="copyCode(this)">Copy</button></pre>`;
+                } else {
+                    finalHtml += `<p>${part.trim().replace(/\n/g, "<br>")}</p>`;
+                }
+            });
+            element.innerHTML = finalHtml;
+        } else {
+            element.innerHTML = text.replace(/\n/g, "<br>");
+        }
+        chatContainer.scrollTop = chatContainer.scrollHeight;
     }
 
-    btn.onclick = ask;
-    input.onkeydown = (e) => { if(e.key === 'Enter') ask(); };
+    function updateSidebar(title) {
+        const item = document.createElement('div');
+        item.className = 'history-item';
+        item.innerText = title;
+        historyBox.prepend(item);
+    }
+
+    window.copyCode = (btn) => {
+        const code = btn.previousElementSibling.innerText;
+        navigator.clipboard.writeText(code);
+        btn.innerText = "Copied!";
+        setTimeout(() => btn.innerText = "Copy", 2000);
+    };
+
+    sendBtn.onclick = handleMessage;
+    userInput.onkeydown = (e) => { if(e.key === 'Enter') handleMessage(); };
 </script>
-
 </body>
 </html>
