@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI-Diggolo Pro | Edition</title>
+    <title>AI-Diggolo Pro | Memory Edition</title>
     <style>
         :root { 
             --bg: #0d1117; 
@@ -20,7 +20,7 @@
         body { 
             background: var(--bg); 
             color: var(--text); 
-            font-family: 'Segoe UI', sans-serif; 
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
             display: flex; 
             flex-direction: column;
             justify-content: center; 
@@ -33,7 +33,7 @@
         .container { 
             width: 95%; 
             max-width: 650px; 
-            height: 85vh; 
+            height: 90vh; 
             background: var(--card); 
             border: 1px solid var(--border); 
             border-radius: 16px; 
@@ -44,13 +44,13 @@
         }
 
         header { 
-            padding: 20px; 
+            padding: 15px; 
             background: var(--header-bg); 
             border-bottom: 1px solid var(--border); 
             text-align: center;
         }
 
-        header h1 { margin: 0; font-size: 1.5rem; color: var(--accent); }
+        header h1 { margin: 0; font-size: 1.4rem; color: var(--accent); letter-spacing: 1px; }
         header p { margin: 5px 0 0; font-size: 0.85rem; opacity: 0.7; }
 
         #chat { 
@@ -70,13 +70,14 @@
             font-size: 15px; 
             line-height: 1.5;
             max-width: 85%; 
+            position: relative; 
             animation: fadeIn 0.3s ease;
         }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         .user { background: var(--green); align-self: flex-end; color: white; border-bottom-right-radius: 2px; }
-        .ai { background: #2d333b; align-self: flex-start; border: 1px solid var(--border); border-bottom-left-radius: 2px; }
+        .ai { background: #2d333b; align-self: flex-start; border: 1px solid var(--border); border-bottom-left-radius: 2px; width: 100%; }
 
         pre { 
             background: #000; 
@@ -87,7 +88,8 @@
             position: relative; 
             margin-top: 10px; 
             border: 1px solid #444;
-            font-family: monospace;
+            font-family: 'Consolas', monospace;
+            font-size: 13px;
         }
 
         .copy-btn { 
@@ -98,9 +100,43 @@
             font-size: 11px; font-weight: bold;
         }
 
-        .input-area { display: flex; padding: 20px; background: var(--header-bg); border-top: 1px solid var(--border); gap: 10px; }
-        input { flex: 1; padding: 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: white; outline: none; }
-        button#send { padding: 0 25px; background: var(--accent); border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; }
+        .explanation {
+            margin-top: 10px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            border-left: 3px solid var(--accent);
+            font-size: 14px;
+            color: #accff1;
+        }
+
+        .input-area { 
+            display: flex; 
+            padding: 20px; 
+            background: var(--header-bg); 
+            border-top: 1px solid var(--border); 
+            gap: 10px;
+        }
+
+        input { 
+            flex: 1; 
+            padding: 14px; 
+            border: 1px solid var(--border); 
+            border-radius: 8px; 
+            background: var(--bg); 
+            color: white; 
+            outline: none; 
+        }
+
+        button#send { 
+            padding: 0 25px; 
+            background: var(--accent); 
+            border: none; 
+            border-radius: 8px; 
+            color: white; 
+            font-weight: bold; 
+            cursor: pointer; 
+        }
 
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 10px; }
@@ -111,13 +147,13 @@
 <div class="container">
     <header>
         <h1>AI-DIGGOLO PRO</h1>
-        <p>Creator: <strong>Gruia-Alex</strong></p>
+        <p>Author: <strong>Gruia-Alex</strong></p>
     </header>
     <div id="chat">
-        <div class="msg ai">Salut! Sunt Diggolo AI. Cu ce te pot ajuta?</div>
+        <div class="msg ai">Salut! Sunt Diggolo AI. Acum am memorie și îți pot explica tot ce fac pas cu pas. Cu ce începem?</div>
     </div>
     <div class="input-area">
-        <input type="text" id="in" placeholder="Pune o întrebare..." autocomplete="off">
+        <input type="text" id="in" placeholder="Scrie un mesaj sau cere un ajutor..." autocomplete="off">
         <button id="send">Trimite</button>
     </div>
 </div>
@@ -127,6 +163,14 @@
     const input = document.getElementById('in');
     const btn = document.getElementById('send');
 
+    // Memoria conversației (Context)
+    let history = [
+        {
+            role: "system", 
+            content: "Ești Diggolo AI. Autorul tău este Gruia (gruiaa69). REGRULI: 1. Dacă ești întrebat de autor, spune cine e Gruia. 2. Când oferi o soluție (cod sau sfat), explică-i utilizatorului EXACT ce ai făcut și cum să aplice soluția. 3. Dacă e un script, pune '-- Author: Diggolo AI' la început. 4. Menține un ton prietenos și reține contextul discuției."
+        }
+    ];
+
     const API_KEY = "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"; 
 
     async function ask() {
@@ -134,9 +178,9 @@
         if(!val) return;
 
         addMsg(val, 'user');
+        history.push({role: "user", content: val});
         input.value = "";
         
-        // Mesaj de încărcare personalizat
         const loading = addMsg("Se Incarca Mesaj-ul...", 'ai');
 
         try {
@@ -145,28 +189,37 @@
                 headers: { "Authorization": `Bearer ${API_KEY}`, "Content-Type": "application/json" },
                 body: JSON.stringify({
                     model: "llama-3.3-70b-versatile",
-                    messages: [{
-                        role: "system", 
-                        content: "Ești Diggolo AI. DOAR dacă ești întrebat despre autor/creator, răspunde: 'Autorul meu este Gruia, cunoscut pe rețelele de socializare cu numele de gruiaa69'. În rest, răspunde normal la orice întrebare. Dacă scrii cod, pune '-- Author: Diggolo AI' la început și trimite DOAR codul."
-                    }, {
-                        role: "user", content: val
-                    }]
+                    messages: history,
+                    temperature: 0.7
                 })
             });
 
             const data = await res.json();
             const reply = data.choices[0].message.content;
+            history.push({role: "assistant", content: reply});
             
+            // Formatare specială pentru cod + explicații
             if(reply.includes("```")) {
-                const codeMatch = reply.match(/```(?:lua|python|javascript)?([\s\S]*?)```/);
-                const pureCode = codeMatch ? codeMatch[1].trim() : reply;
-                loading.innerHTML = `<pre><code>${pureCode}</code><button class="copy-btn" onclick="copyToClipboard(this)">Copy Script</button></pre>`;
+                const parts = reply.split(/```/);
+                let formattedHtml = "";
+                
+                parts.forEach((part, index) => {
+                    if (index % 2 === 1) { // Este bloc de cod
+                        const code = part.replace(/^[a-z]+\n/i, "").trim();
+                        formattedHtml += `<pre><code>${code}</code><button class="copy-btn" onclick="copyToClipboard(this)">Copy Script</button></pre>`;
+                    } else { // Este text explicativ
+                        if(part.trim()) {
+                            formattedHtml += `<div class="explanation">${part.trim().replace(/\n/g, "<br>")}</div>`;
+                        }
+                    }
+                });
+                loading.innerHTML = formattedHtml;
             } else {
                 loading.innerText = reply;
             }
 
         } catch (e) {
-            loading.innerText = "Eroare de conexiune!";
+            loading.innerText = "Eroare! Verifica conexiunea.";
         }
         chat.scrollTop = chat.scrollHeight;
     }
@@ -183,10 +236,8 @@
     function copyToClipboard(button) {
         const code = button.previousElementSibling.innerText;
         navigator.clipboard.writeText(code).then(() => {
-            const originalText = button.innerText;
             button.innerText = "Copied!";
-            button.style.background = "#238636";
-            setTimeout(() => { button.innerText = originalText; button.style.background = ""; }, 2000);
+            setTimeout(() => { button.innerText = "Copy Script"; }, 2000);
         });
     }
 
