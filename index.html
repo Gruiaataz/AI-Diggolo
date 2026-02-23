@@ -118,16 +118,6 @@
             font-size: 13px;
         }
 
-        pre::before {
-            content: "LUA SCRIPT";
-            position: absolute;
-            top: 10px;
-            left: 15px;
-            font-size: 10px;
-            color: #888;
-            font-weight: bold;
-        }
-
         .copy-btn { 
             position: absolute; 
             top: 8px; 
@@ -164,10 +154,7 @@
             background: var(--bg); 
             color: white; 
             outline: none; 
-            transition: border 0.2s;
         }
-
-        input:focus { border-color: var(--accent); }
 
         button#send { 
             padding: 0 25px; 
@@ -177,11 +164,7 @@
             color: white; 
             font-weight: bold; 
             cursor: pointer; 
-            transition: transform 0.1s, background 0.2s;
         }
-
-        button#send:hover { background: #4791e6; }
-        button#send:active { transform: scale(0.95); }
 
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 10px; }
@@ -195,10 +178,10 @@
         <p>Author: <strong>Gruia-Alex</strong></p>
     </header>
     <div id="chat">
-        <div class="msg ai">Salut! Sunt Diggolo AI. Sunt gata să discutam orice vrei tu!</div>
+        <div class="msg ai">Salut! Sunt Diggolo AI. Cum te pot ajuta astăzi?</div>
     </div>
     <div class="input-area">
-        <input type="text" id="in" placeholder="Ex: ce faci Diggolo?.." autocomplete="off">
+        <input type="text" id="in" placeholder="Scrie ceva..." autocomplete="off">
         <button id="send">Trimite</button>
     </div>
 </div>
@@ -217,7 +200,8 @@
         addMsg(val, 'user');
         input.value = "";
         
-        const loading = addMsg("Diggolo AI scrie scriptul...", 'ai');
+        // S-a schimbat mesajul de încărcare aici
+        const loading = addMsg("Se Incarca Mesaj-ul...", 'ai');
 
         try {
             const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -230,11 +214,10 @@
                     model: "llama-3.3-70b-versatile",
                     messages: [{
                         role: "system", 
-                        content: "Ești Diggolo AI. Când scrii cod, pune mereu '-- Author: Diggolo AI' la începutul fiecărui script. Dacă cererea este despre Roblox, scrie DOAR codul într-un bloc de cod markdown (```lua ... ```), fără alte explicații în afara codului."
+                        content: "Ești Diggolo AI. Autorul tău este Gruia, cunoscut pe rețelele de socializare cu numele de 'gruiaa69'. Dacă ești întrebat de autor, răspunde exact: 'Autorul meu este Gruia, cunoscut pe rețelele de socializare cu numele de gruiaa69'. Când scrii cod, pune mereu '-- Author: Diggolo AI' la început. Dacă cererea e despre un script, scrie DOAR codul fără alte explicații."
                     }, {
                         role: "user", content: val
-                    }],
-                    temperature: 0.5
+                    }]
                 })
             });
 
@@ -244,15 +227,13 @@
             if(reply.includes("```")) {
                 const codeMatch = reply.match(/```(?:lua|python|javascript)?([\s\S]*?)```/);
                 const pureCode = codeMatch ? codeMatch[1].trim() : reply;
-                
                 loading.innerHTML = `<pre><code>${pureCode}</code><button class="copy-btn" onclick="copyToClipboard(this)">Copy Script</button></pre>`;
             } else {
                 loading.innerText = reply;
             }
 
         } catch (e) {
-            loading.innerText = "Eroare! Verifică conexiunea sau cheia API.";
-            console.error(e);
+            loading.innerText = "Eroare! Verifică conexiunea.";
         }
         chat.scrollTop = chat.scrollHeight;
     }
@@ -272,11 +253,9 @@
             const originalText = button.innerText;
             button.innerText = "Copied!";
             button.style.background = "#238636";
-            button.style.color = "white";
             setTimeout(() => {
                 button.innerText = originalText;
                 button.style.background = "";
-                button.style.color = "";
             }, 2000);
         });
     }
