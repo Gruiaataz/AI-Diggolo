@@ -18,7 +18,6 @@
 
         body.default { --grad1: #09090b; --grad2: #1e1b4b; --accent: #3b82f6; }
         body.theme-blue { --grad1: #0f172a; --grad2: #075985; --accent: #38bdf8; }
-        body.theme-purple { --grad1: #1e1b4b; --grad2: #581c87; --accent: #a855f7; }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         
@@ -59,12 +58,12 @@
         #chat-window { flex: 1; padding: 30px 15%; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; scroll-behavior: smooth; }
         
         .msg { max-width: 90%; padding: 14px 18px; border-radius: 20px; line-height: 1.6; font-size: 15px; animation: msgSlide 0.3s ease; position: relative; }
-        @keyframes msgSlide { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes msgSlide { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
         
         .user { align-self: flex-end; background: var(--accent); color: white; border-bottom-right-radius: 4px; }
         .ai { align-self: flex-start; background: var(--card); border: 1px solid var(--border); border-bottom-left-radius: 4px; width: fit-content; max-width: 95%; }
 
-        /* FORMAT COD - STIL GEMINI */
+        /* CODE FORMAT */
         .code-container {
             background: var(--code-bg);
             border-radius: 8px;
@@ -82,42 +81,36 @@
             color: #ccc;
         }
         .copy-btn {
-            background: transparent;
-            border: 1px solid #444;
+            background: var(--accent);
+            border: none;
             color: #fff;
-            padding: 4px 8px;
+            padding: 4px 12px;
             border-radius: 4px;
             cursor: pointer;
             font-size: 11px;
-            transition: 0.2s;
+            font-weight: bold;
         }
-        .copy-btn:hover { background: #444; }
         pre {
             padding: 15px;
             overflow-x: auto;
-            font-family: 'Fira Code', 'Courier New', monospace;
+            font-family: 'Consolas', monospace;
             font-size: 13px;
             color: #e0e0e0;
             line-height: 1.5;
+            white-space: pre;
         }
         .ascii-banner {
             color: var(--accent);
-            font-size: 8px;
-            line-height: 1;
-            margin-bottom: 15px;
+            font-size: 11px;
             display: block;
-            white-space: pre;
-            border-bottom: 1px solid #222;
-            padding-bottom: 10px;
+            margin-bottom: 15px;
+            opacity: 0.9;
         }
 
         .input-area { padding: 20px 15% 40px; }
         .input-box { background: #1c1c1f; border: 1px solid var(--border); border-radius: 25px; display: flex; padding: 10px 20px; align-items: flex-end; }
         #userInput { flex: 1; background: transparent; border: none; color: white; font-size: 16px; outline: none; padding: 5px 0; resize: none; max-height: 150px; }
         #sendBtn { background: var(--accent); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-left: 12px; flex-shrink: 0; }
-
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 2000; align-items: center; justify-content: center; }
-        .modal-content { background: #111113; padding: 25px; border-radius: 24px; border: 1px solid var(--border); width: 90%; max-width: 350px; }
     </style>
 </head>
 <body class="default">
@@ -127,57 +120,38 @@
     <div class="sidebar" id="sidebar">
         <button class="new-chat" onclick="createNewChat()">+ Chat Nou</button>
         <div class="chat-list" id="chatList"></div>
-        <button class="new-chat" style="background: #27272a; margin-top: auto;" onclick="openSettings()">🎨 Aspect</button>
-        <div style="font-size: 10px; color: var(--muted); text-align: center; padding: 10px;">Creat de Gruia</div>
+        <div style="font-size: 10px; color: var(--muted); text-align: center; margin-top: auto; padding: 10px;">Diggolo-AI v2 | Gruia</div>
     </div>
 
     <div class="main">
         <div class="header">
             <div class="menu-toggle" onclick="toggleSidebar()">☰</div>
-            <h2 style="font-size: 16px; letter-spacing: 1px;">DIGGOLO AI</h2>
+            <h2 style="font-size: 16px; letter-spacing: 1px;">DIGGOLO-AI</h2>
             <div style="width: 24px;"></div>
         </div>
         <div id="chat-window" onclick="closeSidebar()"></div>
         <div class="input-area">
             <div class="input-box">
-                <textarea id="userInput" placeholder="Scrie ceva sau cere un cod..." rows="1" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"></textarea>
+                <textarea id="userInput" placeholder="Mesaj..." rows="1" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"></textarea>
                 <div id="sendBtn" onclick="send()">➤</div>
             </div>
         </div>
     </div>
 
-    <div class="modal" id="settingsModal">
-        <div class="modal-content">
-            <h3 style="margin-bottom: 20px;">Setări</h3>
-            <select id="themeSelect" onchange="updateSettings()" style="width:100%; background:#000; color:#fff; padding:12px; border-radius:8px; border:1px solid #333;">
-                <option value="default">Midnight</option>
-                <option value="theme-blue">Deep Ocean</option>
-                <option value="theme-purple">Galaxy</option>
-            </select>
-            <button class="new-chat" style="width: 100%; margin-top: 20px;" onclick="closeSettings()">Gata</button>
-        </div>
-    </div>
-
 <script>
     const API_KEY = "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";
-    let chats = JSON.parse(localStorage.getItem('diggolo_v8')) || [];
+    let chats = JSON.parse(localStorage.getItem('diggolo_v9')) || [];
     let currentId = null;
 
-    const DIGGOLO_ASCII = `██████╗░██╗░██████╗░░██████╗░░█████╗░██╗░░░░░░█████╗░
-██╔══██╗██║██╔════╝░██╔════╝░██╔══██╗██║░░░░░██╔══██╗
-██║░░██║██║██║░░██╗░██║░░██╗░██║░░██║██║░░░░░██║░░██║
-██║░░██║██║██║░░╚██╗██║░░╚██╗██║░░██║██║░░░░░██║░░██║
-██████╔╝██║╚██████╔╝╚██████╔╝╚█████╔╝███████╗╚█████╔╝
-╚═════╝░╚═╝░╚═════╝░░╚═════╝░░╚════╝░╚══════╝░╚════╝░`;
+    const BANNER_TEXT = `░█▀▀▄ ▀█▀ ░█▀▀█ ░█▀▀█ ░█▀▀▀█ ░█─── ░█▀▀▀█ 　 ── 　 ─█▀▀█ ▀█▀ 
+░█─░█ ░█─ ░█─▄▄ ░█─▄▄ ░█──░█ ░█─── ░█──░█ 　 ▀▀ 　 ░█▄▄█ ░█─ 
+░█▄▄▀ ▄█▄ ░█▄▄█ ░█▄▄█ ░█▄▄▄█ ░█▄▄█ ░█▄▄▄█ 　 ── 　 ░█─░█ ▄█▄ v2 - Owner Gruia`;
 
-    const SYSTEM_PROMPT = `Ești Diggolo AI, creat de Gruia. Răspunde scurt și direct. 
-    IMPORTANT: Dacă generezi orice fel de cod (HTML, CSS, JS, Python, Roblox Lua etc.), pune-l ÎNTRE TREI BACKTICKS (\`\`\`). 
-    Nu folosi explicații lungi. Creatorul tău este Gruia.`;
+    const SYSTEM_PROMPT = `Ești Diggolo-AI, creat de Gruia. Răspunzi clar și direct. Când scrii cod, folosește neapărat formatul \`\`\`codul tau aici\`\`\`.`;
 
     function init() {
         if(chats.length > 0) loadChat(chats[0].id); else createNewChat();
         renderList();
-        loadSettings();
     }
 
     function createNewChat() {
@@ -206,7 +180,6 @@
 
         const chat = chats.find(c => c.id === currentId);
         chat.messages.push({ role: "user", content: val });
-        if(chat.title === "Chat Nou") chat.title = val.substring(0, 20);
 
         try {
             const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -220,7 +193,7 @@
             loading.remove();
             addMsgUI(reply, 'ai');
             save();
-        } catch (e) { loading.innerText = "Eroare API."; }
+        } catch (e) { loading.innerText = "Eroare conexiune."; }
     }
 
     function addMsgUI(txt, role) {
@@ -229,29 +202,15 @@
         div.className = `msg ${role}`;
 
         if (role === 'ai') {
-            // Detectăm codul între backticks
             const parts = txt.split(/```/);
             parts.forEach((part, index) => {
-                if (index % 2 === 1) { // Este bloc de cod
+                if (index % 2 === 1) {
                     const container = document.createElement('div');
                     container.className = 'code-container';
-                    
-                    const header = document.createElement('div');
-                    header.className = 'code-header';
-                    header.innerHTML = `<span>Script</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>`;
-                    
-                    const pre = document.createElement('pre');
-                    const banner = document.createElement('span');
-                    banner.className = 'ascii-banner';
-                    banner.innerText = DIGGOLO_ASCII;
-                    
-                    const code = document.createElement('code');
-                    code.innerText = part.trim();
-                    
-                    pre.appendChild(banner);
-                    pre.appendChild(code);
-                    container.appendChild(header);
-                    container.appendChild(pre);
+                    container.innerHTML = `
+                        <div class="code-header"><span>Script</span><button class="copy-btn" onclick="copyFullScript(this)">Copy</button></div>
+                        <pre><span class="ascii-banner">${BANNER_TEXT}</span>\n\n${part.trim()}</pre>
+                    `;
                     div.appendChild(container);
                 } else {
                     const span = document.createElement('span');
@@ -259,20 +218,26 @@
                     div.appendChild(span);
                 }
             });
-        } else {
-            div.innerText = txt;
-        }
+        } else { div.innerText = txt; }
 
         win.appendChild(div);
         win.scrollTop = win.scrollHeight;
         return div;
     }
 
-    function copyCode(btn) {
-        const code = btn.parentElement.nextElementSibling.querySelector('code').innerText;
-        navigator.clipboard.writeText(code);
-        btn.innerText = "Copied!";
-        setTimeout(() => btn.innerText = "Copy", 2000);
+    // FUNCȚIA CARE COPIAZĂ TOT (BANNER + COD)
+    function copyFullScript(btn) {
+        const pre = btn.parentElement.nextElementSibling;
+        const textToCopy = pre.innerText; // Aceasta ia și banner-ul și codul
+        
+        navigator.clipboard.writeText(textToCopy).then(() => {
+            btn.innerText = "Copied!";
+            btn.style.background = "#22c55e";
+            setTimeout(() => { 
+                btn.innerText = "Copy"; 
+                btn.style.background = "var(--accent)";
+            }, 2000);
+        });
     }
 
     function renderList() {
@@ -281,31 +246,27 @@
         chats.forEach(c => {
             const d = document.createElement('div');
             d.className = `chat-item ${c.id === currentId ? 'active' : ''}`;
-            d.innerText = c.title;
+            d.innerText = c.title.substring(0, 25);
             d.onclick = () => loadChat(c.id);
             l.appendChild(d);
         });
     }
 
-    function save() { localStorage.setItem('diggolo_v8', JSON.stringify(chats)); renderList(); }
-    function openSettings() { document.getElementById('settingsModal').style.display = 'flex'; }
-    function closeSettings() { document.getElementById('settingsModal').style.display = 'none'; }
-    function updateSettings() { document.body.className = document.getElementById('themeSelect').value; }
-    function loadSettings() { document.body.className = document.getElementById('themeSelect').value; }
+    function save() { localStorage.setItem('diggolo_v9', JSON.stringify(chats)); renderList(); }
     function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
     function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); }
 
-    // Stele Canvas
+    // Stele Canvas Animatie
     const canvas = document.getElementById('bg-canvas');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth; canvas.height = window.innerHeight;
     let particles = [];
     class Star {
-        constructor() { this.x = Math.random()*canvas.width; this.y = Math.random()*canvas.height; this.s = Math.random()*1.2; this.v = Math.random()*0.4+0.1; }
+        constructor() { this.x = Math.random()*canvas.width; this.y = Math.random()*canvas.height; this.s = Math.random()*1.5; this.v = Math.random()*0.3+0.1; }
         u() { this.y += this.v; if(this.y > canvas.height) this.y = -10; }
         d() { ctx.fillStyle = "white"; ctx.beginPath(); ctx.arc(this.x, this.y, this.s, 0, Math.PI*2); ctx.fill(); }
     }
-    for(let i=0; i<80; i++) particles.push(new Star());
+    for(let i=0; i<70; i++) particles.push(new Star());
     function anim() { ctx.clearRect(0,0,canvas.width, canvas.height); particles.forEach(p=>{p.u();p.d();}); requestAnimationFrame(anim); }
     anim();
     init();
