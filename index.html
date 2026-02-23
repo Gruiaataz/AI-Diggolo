@@ -2,85 +2,112 @@
 <html lang="ro">
 <head>
     <meta charset="UTF-8">
-    <title>AI-Diggolo Pro | Groq</title>
+    <title>AI-Diggolo Pro | Edition</title>
     <style>
-        body { background: #0d1117; color: #c9d1d9; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .chat-container { width: 400px; height: 500px; background: #161b22; border-radius: 12px; display: flex; flex-direction: column; border: 1px solid #30363d; }
-        header { padding: 15px; text-align: center; border-bottom: 1px solid #30363d; color: #58a6ff; font-weight: bold; }
-        #chat-box { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-        .msg { padding: 10px; border-radius: 8px; font-size: 14px; max-width: 85%; }
-        .user { background: #238636; align-self: flex-end; color: white; }
-        .ai { background: #30363d; align-self: flex-start; }
-        .input-area { display: flex; padding: 10px; border-top: 1px solid #30363d; }
-        input { flex: 1; padding: 10px; background: #0d1117; color: white; border: 1px solid #30363d; border-radius: 5px; outline: none; }
-        button { margin-left: 8px; padding: 10px; background: #58a6ff; border: none; border-radius: 5px; color: white; cursor: pointer; }
+        :root { --bg: #0d1117; --card: #161b22; --accent: #58a6ff; --text: #c9d1d9; --green: #238636; }
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .container { width: 95%; max-width: 550px; height: 85vh; background: var(--card); border: 1px solid #30363d; border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        header { padding: 15px; background: #21262d; border-bottom: 1px solid #30363d; text-align: center; }
+        #chat { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+        .msg { padding: 12px; border-radius: 10px; font-size: 15px; max-width: 85%; position: relative; }
+        .user { background: var(--green); align-self: flex-end; color: white; }
+        .ai { background: #30363d; align-self: flex-start; border: 1px solid #444; width: 100%; }
+        
+        /* Stil pentru cod */
+        pre { background: #000; color: #7ee787; padding: 15px; border-radius: 8px; overflow-x: auto; position: relative; margin-top: 10px; border: 1px solid #58a6ff; }
+        .copy-btn { position: absolute; top: 5px; right: 5px; background: #58a6ff; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; }
+        .copy-btn:hover { background: #1f6feb; }
+
+        .input-area { display: flex; padding: 15px; background: #161b22; border-top: 1px solid #30363d; }
+        input { flex: 1; padding: 12px; border: 1px solid #30363d; border-radius: 6px; background: #0d1117; color: white; outline: none; }
+        button#send { margin-left: 10px; padding: 0 20px; background: var(--accent); border: none; border-radius: 6px; color: white; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
-<div class="chat-container">
-    <header>AI-DIGGOLO PRO</header>
-    <div id="chat-box"><div class="msg ai">Salut, Gruia! Acum suntem pe motorul Groq. Ar trebui să meargă brici!</div></div>
+
+<div class="container">
+    <header><strong style="color: var(--accent);">AI-DIGGOLO PRO</strong></header>
+    <div id="chat"></div>
     <div class="input-area">
-        <input type="text" id="userInput" placeholder="Scrie un mesaj...">
-        <button id="sendBtn">Trimite</button>
+        <input type="text" id="in" placeholder="Cere un script de Roblox...">
+        <button id="send">Trimite</button>
     </div>
 </div>
 
 <script>
-    const box = document.getElementById('chat-box');
-    const input = document.getElementById('userInput');
-    const btn = document.getElementById('sendBtn');
+    const chat = document.getElementById('chat');
+    const input = document.getElementById('in');
+    const btn = document.getElementById('send');
 
-    // CHEIA TA GROQ (Asigură-te că e cea de tip gsk_...)
-    const GROQ_KEY = "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";
+    // FOLOSEȘTE CHEIA TA DE LA GROQ AICI
+    const API_KEY = "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"; 
 
-    async function askAI() {
-        const text = input.value.trim();
-        if(!text) return;
+    async function ask() {
+        const val = input.value.trim();
+        if(!val) return;
 
-        addMsg(text, 'user');
+        addMsg(val, 'user');
         input.value = "";
-        const loading = addMsg("AI-Diggolo scrie...", 'ai');
+        const loading = addMsg("Diggolo AI generează codul...", 'ai');
 
         try {
-            const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+            const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                 method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${GROQ_KEY}`,
-                    "Content-Type": "application/json"
-                },
+                headers: { "Authorization": `Bearer ${API_KEY}`, "Content-Type": "application/json" },
                 body: JSON.stringify({
                     model: "llama-3.3-70b-versatile",
-                    messages: [
-                        {role: "system", content: "Ești AI-Diggolo, un asistent creat de Gruia-Alexandru. Răspunzi mereu în română."},
-                        {role: "user", content: text}
-                    ]
+                    messages: [{
+                        role: "system", 
+                        content: "Ești Diggolo AI. Când scrii cod, pune mereu '-- Author: Diggolo AI' la început. Dacă cererea e despre Roblox, scrie DOAR codul într-un bloc de cod."
+                    }, {
+                        role: "user", content: val
+                    }]
                 })
             });
 
-            const data = await response.json();
+            const data = await res.json();
+            const reply = data.choices[0].message.content;
             
-            if (data.choices && data.choices[0]) {
-                loading.innerText = data.choices[0].message.content;
+            // Verificăm dacă răspunsul conține blocuri de cod (```)
+            if(reply.includes("```")) {
+                const codeMatch = reply.match(/```(?:lua|python|javascript)?([\s\S]*?)```/);
+                const pureCode = codeMatch ? codeMatch[1].trim() : reply;
+                
+                loading.innerHTML = `<pre><code>${pureCode}</code><button class="copy-btn" onclick="copyToClipboard(this)">Copy Script</button></pre>`;
             } else {
-                loading.innerText = "Eroare: Groq nu a trimis un răspuns valid.";
+                loading.innerText = reply;
             }
+
         } catch (e) {
-            loading.innerText = "Eroare de conexiune! Verifică dacă ai deblocat cheia pe GitHub.";
+            loading.innerText = "Eroare! Verifică conexiunea sau cheia API.";
         }
     }
 
     function addMsg(t, c) {
         const d = document.createElement('div');
-        d.className = 'msg ' + c;
+        d.className = `msg ${c}`;
         d.innerText = t;
-        box.appendChild(d);
-        box.scrollTop = box.scrollHeight;
+        chat.appendChild(d);
+        chat.scrollTop = chat.scrollHeight;
         return d;
     }
 
-    btn.onclick = askAI;
-    input.onkeydown = (e) => { if(e.key === 'Enter') askAI(); };
+    function copyToClipboard(button) {
+        const code = button.previousElementSibling.innerText;
+        navigator.clipboard.writeText(code).then(() => {
+            const originalText = button.innerText;
+            button.innerText = "Copied!";
+            button.style.background = "#238636";
+            setTimeout(() => {
+                button.innerText = originalText;
+                button.style.background = "#58a6ff";
+            }, 2000);
+        });
+    }
+
+    btn.onclick = ask;
+    input.onkeydown = (e) => { if(e.key === 'Enter') ask(); };
 </script>
+
 </body>
 </html>
