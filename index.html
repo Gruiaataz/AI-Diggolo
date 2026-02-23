@@ -27,28 +27,15 @@
             height: 100vh; 
             width: 100vw;
             overflow: hidden; 
-            transition: 0.5s; 
-            position: fixed;
+            transition: 0.5s;
         }
 
-        #bg-canvas { 
-            position: fixed; 
-            inset: 0; 
-            pointer-events: none; 
-            z-index: 0; 
-            opacity: 0; 
-            transition: 1s; 
-        }
+        #bg-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: 0; transition: 1s; }
         #bg-canvas.active { opacity: 0.6; }
 
         .sidebar { 
-            width: 280px; 
-            background: var(--sidebar); 
-            border-right: 1px solid var(--border); 
-            display: flex; 
-            flex-direction: column; 
-            padding: 15px; 
-            z-index: 100; 
+            width: 280px; background: var(--sidebar); border-right: 1px solid var(--border); 
+            display: flex; flex-direction: column; padding: 15px; z-index: 100; 
             transition: transform 0.3s ease;
         }
 
@@ -56,62 +43,54 @@
             .sidebar { position: absolute; height: 100%; transform: translateX(-100%); }
             .sidebar.open { transform: translateX(0); }
             #chat-window { padding: 20px 5% !important; }
-            .input-area { padding: 10px 5% 25px !important; }
+            .input-area { padding: 10px 10px 20px !important; }
         }
 
         .new-chat { background: var(--accent); color: white; border: none; padding: 12px; border-radius: 12px; cursor: pointer; font-weight: 600; margin-bottom: 20px; font-size: 14px; }
         .chat-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
-        .chat-item { padding: 12px; border-radius: 10px; cursor: pointer; font-size: 13px; color: var(--muted); background: rgba(255,255,255,0.03); border: 1px solid transparent; transition: 0.2s; }
+        .chat-item { padding: 12px; border-radius: 10px; cursor: pointer; font-size: 13px; color: var(--muted); background: rgba(255,255,255,0.03); }
         .chat-item.active { background: var(--card); color: white; border: 1px solid var(--border); }
 
         .visitor-counter { font-size: 11px; color: var(--muted); margin-top: 10px; text-align: center; text-transform: uppercase; }
 
-        .main { flex: 1; display: flex; flex-direction: column; position: relative; z-index: 10; width: 100%; }
+        .main { flex: 1; display: flex; flex-direction: column; position: relative; z-index: 10; width: 100%; height: 100%; }
         .header { 
-            padding: 15px 20px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            border-bottom: 1px solid var(--border); 
-            background: rgba(9,9,11,0.7); 
-            backdrop-filter: blur(15px); 
+            padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; 
+            border-bottom: 1px solid var(--border); background: rgba(9,9,11,0.7); backdrop-filter: blur(15px); 
         }
 
-        .menu-toggle { display: none; font-size: 24px; cursor: pointer; }
+        .menu-toggle { display: none; font-size: 24px; cursor: pointer; padding: 5px; }
         @media (max-width: 768px) { .menu-toggle { display: block; } }
 
-        #chat-window { flex: 1; padding: 30px 15%; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; scroll-behavior: smooth; }
+        #chat-window { flex: 1; padding: 30px 15%; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
         
-        .msg { 
-            max-width: 85%; padding: 12px 16px; border-radius: 18px; line-height: 1.5; font-size: 15px;
-            animation: fadeIn 0.3s ease; word-wrap: break-word; white-space: pre-wrap;
-        }
+        .msg { max-width: 85%; padding: 12px 16px; border-radius: 18px; line-height: 1.5; font-size: 15px; animation: fadeIn 0.3s ease; word-wrap: break-word; white-space: pre-wrap; }
         .user { align-self: flex-end; background: var(--accent); color: white; border-bottom-right-radius: 4px; }
         .ai { align-self: flex-start; background: var(--card); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
 
-        .input-area { padding: 20px 15% 30px; background: linear-gradient(to top, var(--bg), transparent); }
+        .input-area { padding: 20px 15% 30px; }
         .input-box { 
             background: #1c1c1f; border: 1px solid var(--border); border-radius: 20px; 
-            display: flex; padding: 10px 15px; align-items: flex-end; 
+            display: flex; padding: 8px 15px; align-items: flex-end;
         }
 
         #userInput { 
             flex: 1; background: transparent; border: none; color: white; font-size: 16px; 
-            outline: none; padding: 5px; resize: none; max-height: 150px;
+            outline: none; padding: 8px 0; resize: none; max-height: 150px;
+            width: 100%; -webkit-appearance: none;
         }
 
         #sendBtn { 
-            background: var(--accent); color: white; width: 36px; height: 36px; 
+            background: var(--accent); color: white; width: 38px; height: 38px; 
             border-radius: 50%; display: flex; align-items: center; justify-content: center; 
-            cursor: pointer; margin-left: 10px; flex-shrink: 0;
+            cursor: pointer; margin-left: 10px; flex-shrink: 0; margin-bottom: 2px;
         }
 
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; align-items: center; justify-content: center; padding: 20px; }
         .modal-content { background: var(--sidebar); padding: 25px; border-radius: 24px; border: 1px solid var(--border); width: 100%; max-width: 400px; }
         
         #contextMenu { display: none; position: fixed; background: #1c1c1f; border: 1px solid var(--border); border-radius: 12px; z-index: 1000; width: 180px; overflow: hidden; }
-        .menu-item { padding: 12px 15px; cursor: pointer; font-size: 14px; transition: 0.2s; }
-        .menu-item:hover { background: var(--accent); }
+        .menu-item { padding: 12px 15px; cursor: pointer; font-size: 14px; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
     </style>
@@ -126,9 +105,9 @@
     </div>
 
     <div class="sidebar" id="sidebar">
-        <button class="new-chat" onclick="createNewChat()">+ Conversație Nouă</button>
+        <button class="new-chat" onclick="createNewChat()">+ Chat Nou</button>
         <div class="chat-list" id="chatList"></div>
-        <div class="visitor-counter">Total Vizite: <span id="count">1</span></div>
+        <div class="visitor-counter">Vizite: <span id="count">1</span></div>
         <button class="new-chat" style="background: #27272a; margin-top: 10px;" onclick="openSettings()">⚙️ Setări</button>
     </div>
 
@@ -141,7 +120,7 @@
         <div id="chat-window" onclick="closeSidebar()"></div>
         <div class="input-area">
             <div class="input-box">
-                <textarea id="userInput" placeholder="Mesaj..." rows="1" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"></textarea>
+                <textarea id="userInput" placeholder="Scrie un mesaj..." rows="1" autocomplete="off" spellcheck="false"></textarea>
                 <div id="sendBtn" onclick="send()">➤</div>
             </div>
         </div>
@@ -151,15 +130,15 @@
         <div class="modal-content">
             <h3 style="margin-bottom: 20px;">Personalizare</h3>
             <div style="display:flex; justify-content:space-between; margin-bottom:15px; align-items:center;">
-                <span>Efect Cădere:</span>
+                <span>Animație fundal:</span>
                 <input type="checkbox" id="animToggle" onchange="updateSettings()">
             </div>
             <div style="display:flex; justify-content:space-between; margin-bottom:15px; align-items:center;">
-                <span>Temă Culori:</span>
+                <span>Temă:</span>
                 <select id="themeSelect" onchange="updateSettings()" style="background:#000; color:#fff; padding:8px; border-radius:8px;">
-                    <option value="default">Dark Knight</option>
-                    <option value="theme-blue">Ocean View</option>
-                    <option value="theme-purple">Deep Purple</option>
+                    <option value="default">Dark</option>
+                    <option value="theme-blue">Blue</option>
+                    <option value="theme-purple">Purple</option>
                 </select>
             </div>
             <button class="new-chat" style="width: 100%;" onclick="closeSettings()">Închide</button>
@@ -168,10 +147,17 @@
 
 <script>
     const API_KEY = "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";
-    // Cheia de stocare rămâne aceeași pentru a păstra datele vechi
     let chats = JSON.parse(localStorage.getItem('diggolo_v6')) || [];
     let currentId = null;
     let selectedId = null;
+
+    const inputField = document.getElementById('userInput');
+
+    // Fix pentru tastatura de mobil
+    inputField.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = (this.scrollHeight) + 'px';
+    });
 
     function init() {
         renderList();
@@ -187,7 +173,7 @@
 
     function createNewChat() {
         const id = Date.now();
-        chats.unshift({ id, title: "Conversație Nouă", messages: [{ role: "system", content: "Ești Diggolo AI." }] });
+        chats.unshift({ id, title: "Chat Nou", messages: [{ role: "system", content: "Ești Diggolo AI." }] });
         save();
         loadChat(id);
     }
@@ -203,21 +189,18 @@
     }
 
     async function send() {
-        const el = document.getElementById('userInput');
-        const val = el.value.trim();
+        const val = inputField.value.trim();
         if(!val) return;
 
         addMsgUI(val, 'user');
-        el.value = '';
-        el.style.height = 'auto';
+        inputField.value = '';
+        inputField.style.height = 'auto';
         const loading = addMsgUI("...", 'ai');
 
         const chat = chats.find(c => c.id === currentId);
         chat.messages.push({ role: "user", content: val });
-        
-        // Actualizăm titlul automat dacă e cel default
-        if(chat.title === "Conversație Nouă") chat.title = val.substring(0, 25);
-        save(); // Salvăm imediat după mesajul userului
+        if(chat.title === "Chat Nou") chat.title = val.substring(0, 20);
+        save();
 
         try {
             const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -227,19 +210,19 @@
             });
             const data = await res.json();
             const reply = data.choices[0].message.content;
-            
             chat.messages.push({ role: "assistant", content: reply });
             loading.innerText = reply;
-            save(); // Salvăm din nou după răspunsul AI-ului
-        } catch (e) { loading.innerText = "Eroare de conexiune."; }
+            save();
+        } catch (e) { loading.innerText = "Eroare."; }
     }
 
     function addMsgUI(txt, role) {
         const d = document.createElement('div');
         d.className = `msg ${role === 'user' ? 'user' : 'ai'}`;
         d.innerText = txt;
-        document.getElementById('chat-window').appendChild(d);
-        document.getElementById('chat-window').scrollTop = document.getElementById('chat-window').scrollHeight;
+        const win = document.getElementById('chat-window');
+        win.appendChild(d);
+        win.scrollTop = win.scrollHeight;
         return d;
     }
 
@@ -263,7 +246,6 @@
         });
     }
 
-    // Settings
     function openSettings() { document.getElementById('settingsModal').style.display = 'flex'; }
     function closeSettings() { document.getElementById('settingsModal').style.display = 'none'; }
     function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
@@ -296,20 +278,19 @@
     }
 
     window.onclick = () => document.getElementById('contextMenu').style.display = 'none';
-    document.getElementById('userInput').onkeydown = (e) => { if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } };
+    inputField.onkeydown = (e) => { if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } };
 
-    // Canvas Animate (Stele)
     const canvas = document.getElementById('bg-canvas');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     let particles = [];
     class P {
-        constructor() { this.x = Math.random()*canvas.width; this.y = Math.random()*canvas.height; this.s = Math.random()*2; this.v = Math.random()*2+1; }
+        constructor() { this.x = Math.random()*canvas.width; this.y = Math.random()*canvas.height; this.s = Math.random()*2; this.v = Math.random()*1.5+0.5; }
         u() { this.y += this.v; if(this.y > canvas.height) this.y = -10; }
-        d() { ctx.fillStyle = "white"; ctx.beginPath(); ctx.arc(this.x, this.y, this.s, 0, Math.PI*2); ctx.fill(); }
+        d() { ctx.fillStyle = "rgba(255,255,255,0.5)"; ctx.beginPath(); ctx.arc(this.x, this.y, this.s, 0, Math.PI*2); ctx.fill(); }
     }
-    for(let i=0; i<80; i++) particles.push(new P());
+    for(let i=0; i<60; i++) particles.push(new P());
     function anim() { ctx.clearRect(0,0,canvas.width, canvas.height); particles.forEach(p=>{p.u();p.d();}); requestAnimationFrame(anim); }
     anim();
     init();
