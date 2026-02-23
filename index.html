@@ -13,13 +13,12 @@
             --text: #f4f4f5;
             --muted: #a1a1aa;
             --border: #27272a;
+            --code-bg: #000000;
         }
 
-        /* Teme de culori multiple pentru fundal */
         body.default { --grad1: #09090b; --grad2: #1e1b4b; --accent: #3b82f6; }
         body.theme-blue { --grad1: #0f172a; --grad2: #075985; --accent: #38bdf8; }
         body.theme-purple { --grad1: #1e1b4b; --grad2: #581c87; --accent: #a855f7; }
-        body.theme-sunset { --grad1: #450a0a; --grad2: #7c2d12; --accent: #fb923c; }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         
@@ -27,117 +26,121 @@
             background: linear-gradient(135deg, var(--grad1), var(--grad2));
             background-size: 400% 400%;
             animation: gradientBG 15s ease infinite;
-            color: var(--text); 
-            display: flex; 
-            height: 100vh; 
-            width: 100vw;
-            overflow: hidden; 
+            color: var(--text); display: flex; height: 100vh; width: 100vw; overflow: hidden; 
         }
 
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
+        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
         #bg-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 1; opacity: 0.5; }
 
-        /* SIDEBAR */
         .sidebar { 
             width: 280px; background: var(--sidebar); border-right: 1px solid var(--border); 
             display: flex; flex-direction: column; padding: 15px; z-index: 100; 
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            backdrop-filter: blur(10px);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); backdrop-filter: blur(10px);
         }
 
         @media (max-width: 768px) {
             .sidebar { position: absolute; height: 100%; transform: translateX(-100%); }
             .sidebar.open { transform: translateX(0); }
-            #chat-window { padding: 20px 15px !important; }
+            #chat-window { padding: 20px 10px !important; }
             .input-area { padding: 10px 10px 25px !important; }
         }
 
-        .new-chat { background: var(--accent); color: white; border: none; padding: 12px; border-radius: 12px; cursor: pointer; font-weight: 600; margin-bottom: 20px; transition: 0.3s; }
-        .new-chat:active { transform: scale(0.95); }
-
+        .new-chat { background: var(--accent); color: white; border: none; padding: 12px; border-radius: 12px; cursor: pointer; font-weight: 600; margin-bottom: 20px; }
         .chat-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
-        .chat-item { padding: 12px; border-radius: 10px; cursor: pointer; font-size: 13px; color: var(--muted); background: rgba(255,255,255,0.05); border: 1px solid transparent; }
-        .chat-item.active { background: var(--card); color: white; border-color: var(--accent); }
+        .chat-item { padding: 12px; border-radius: 10px; cursor: pointer; font-size: 13px; color: var(--muted); background: rgba(255,255,255,0.05); }
+        .chat-item.active { background: var(--card); color: white; border: 1px solid var(--accent); }
 
-        /* MAIN */
         .main { flex: 1; display: flex; flex-direction: column; position: relative; z-index: 10; height: 100%; }
-        .header { 
-            padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; 
-            border-bottom: 1px solid var(--border); background: rgba(0,0,0,0.2); backdrop-filter: blur(5px); 
-        }
-
+        .header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); background: rgba(0,0,0,0.2); }
         .menu-toggle { display: none; font-size: 24px; cursor: pointer; }
         @media (max-width: 768px) { .menu-toggle { display: block; } }
 
-        #chat-window { flex: 1; padding: 30px 20%; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; scroll-behavior: smooth; }
+        #chat-window { flex: 1; padding: 30px 15%; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; scroll-behavior: smooth; }
         
-        .msg { max-width: 85%; padding: 14px 18px; border-radius: 20px; line-height: 1.5; font-size: 15px; animation: msgSlide 0.3s ease-out forwards; }
+        .msg { max-width: 90%; padding: 14px 18px; border-radius: 20px; line-height: 1.6; font-size: 15px; animation: msgSlide 0.3s ease; position: relative; }
         @keyframes msgSlide { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        .user { align-self: flex-end; background: var(--accent); color: white; border-bottom-right-radius: 4px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
-        .ai { align-self: flex-start; background: var(--card); border: 1px solid var(--border); border-bottom-left-radius: 4px; backdrop-filter: blur(10px); }
+        .user { align-self: flex-end; background: var(--accent); color: white; border-bottom-right-radius: 4px; }
+        .ai { align-self: flex-start; background: var(--card); border: 1px solid var(--border); border-bottom-left-radius: 4px; width: fit-content; max-width: 95%; }
 
-        /* INPUT FIX PENTRU MOBIL */
-        .input-area { padding: 20px 20% 40px; }
-        .input-box { 
-            background: #1c1c1f; border: 1px solid var(--border); border-radius: 25px; 
-            display: flex; padding: 10px 20px; align-items: flex-end; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        /* FORMAT COD - STIL GEMINI */
+        .code-container {
+            background: var(--code-bg);
+            border-radius: 8px;
+            margin: 10px 0;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        .code-header {
+            background: #2d2d2d;
+            padding: 8px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: #ccc;
+        }
+        .copy-btn {
+            background: transparent;
+            border: 1px solid #444;
+            color: #fff;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            transition: 0.2s;
+        }
+        .copy-btn:hover { background: #444; }
+        pre {
+            padding: 15px;
+            overflow-x: auto;
+            font-family: 'Fira Code', 'Courier New', monospace;
+            font-size: 13px;
+            color: #e0e0e0;
+            line-height: 1.5;
+        }
+        .ascii-banner {
+            color: var(--accent);
+            font-size: 8px;
+            line-height: 1;
+            margin-bottom: 15px;
+            display: block;
+            white-space: pre;
+            border-bottom: 1px solid #222;
+            padding-bottom: 10px;
         }
 
-        #userInput { 
-            flex: 1; background: transparent; border: none; color: white; font-size: 16px; 
-            outline: none; padding: 5px 0; resize: none; max-height: 150px; min-height: 24px;
-        }
+        .input-area { padding: 20px 15% 40px; }
+        .input-box { background: #1c1c1f; border: 1px solid var(--border); border-radius: 25px; display: flex; padding: 10px 20px; align-items: flex-end; }
+        #userInput { flex: 1; background: transparent; border: none; color: white; font-size: 16px; outline: none; padding: 5px 0; resize: none; max-height: 150px; }
+        #sendBtn { background: var(--accent); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-left: 12px; flex-shrink: 0; }
 
-        #sendBtn { 
-            background: var(--accent); color: white; width: 40px; height: 40px; 
-            border-radius: 50%; display: flex; align-items: center; justify-content: center; 
-            cursor: pointer; margin-left: 12px; flex-shrink: 0; transition: 0.2s;
-        }
-
-        /* MODAL */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 2000; align-items: center; justify-content: center; padding: 20px; }
-        .modal-content { background: #111113; padding: 25px; border-radius: 24px; border: 1px solid var(--border); width: 100%; max-width: 350px; }
-        
-        #contextMenu { display: none; position: fixed; background: #1c1c1f; border: 1px solid var(--border); border-radius: 12px; z-index: 1000; width: 180px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,1); }
-        .menu-item { padding: 12px 15px; cursor: pointer; font-size: 14px; transition: 0.2s; }
-        .menu-item:hover { background: var(--accent); }
-
-        .creator-tag { font-size: 10px; color: var(--muted); text-align: center; margin-top: auto; padding: 10px; opacity: 0.7; }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 2000; align-items: center; justify-content: center; }
+        .modal-content { background: #111113; padding: 25px; border-radius: 24px; border: 1px solid var(--border); width: 90%; max-width: 350px; }
     </style>
 </head>
 <body class="default">
 
     <canvas id="bg-canvas"></canvas>
 
-    <div id="contextMenu">
-        <div class="menu-item" onclick="window.print()">📄 Salvează PDF</div>
-        <div class="menu-item" style="color: #ff4d4d;" onclick="deleteChat()">🗑️ Șterge Chat</div>
-    </div>
-
     <div class="sidebar" id="sidebar">
         <button class="new-chat" onclick="createNewChat()">+ Chat Nou</button>
         <div class="chat-list" id="chatList"></div>
-        <div style="font-size: 11px; color: var(--muted); text-align: center; margin: 10px 0;">Vizite: <span id="count">...</span></div>
-        <button class="new-chat" style="background: #27272a;" onclick="openSettings()">🎨 Aspect</button>
-        <div class="creator-tag">Creat cu ❤️ de Gruia</div>
+        <button class="new-chat" style="background: #27272a; margin-top: auto;" onclick="openSettings()">🎨 Aspect</button>
+        <div style="font-size: 10px; color: var(--muted); text-align: center; padding: 10px;">Creat de Gruia</div>
     </div>
 
     <div class="main">
         <div class="header">
             <div class="menu-toggle" onclick="toggleSidebar()">☰</div>
-            <h2 style="font-size: 18px; letter-spacing: 1px;">DIGGOLO AI</h2>
-            <div style="width: 24px;"></div> 
+            <h2 style="font-size: 16px; letter-spacing: 1px;">DIGGOLO AI</h2>
+            <div style="width: 24px;"></div>
         </div>
         <div id="chat-window" onclick="closeSidebar()"></div>
         <div class="input-area">
             <div class="input-box">
-                <textarea id="userInput" placeholder="Scrie ceva..." rows="1" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"></textarea>
+                <textarea id="userInput" placeholder="Scrie ceva sau cere un cod..." rows="1" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"></textarea>
                 <div id="sendBtn" onclick="send()">➤</div>
             </div>
         </div>
@@ -146,54 +149,41 @@
     <div class="modal" id="settingsModal">
         <div class="modal-content">
             <h3 style="margin-bottom: 20px;">Setări</h3>
-            <div style="display:flex; justify-content:space-between; margin-bottom:15px; align-items:center;">
-                <span>Efect Stele:</span>
-                <input type="checkbox" id="animToggle" checked onchange="updateSettings()">
-            </div>
-            <div style="display:flex; justify-content:space-between; margin-bottom:15px; align-items:center;">
-                <span>Tema Fundal:</span>
-                <select id="themeSelect" onchange="updateSettings()" style="background:#000; color:#fff; padding:8px; border-radius:8px;">
-                    <option value="default">Midnight</option>
-                    <option value="theme-blue">Deep Ocean</option>
-                    <option value="theme-purple">Galaxy</option>
-                    <option value="theme-sunset">Sunset</option>
-                </select>
-            </div>
-            <button class="new-chat" style="width: 100%;" onclick="closeSettings()">Închide</button>
+            <select id="themeSelect" onchange="updateSettings()" style="width:100%; background:#000; color:#fff; padding:12px; border-radius:8px; border:1px solid #333;">
+                <option value="default">Midnight</option>
+                <option value="theme-blue">Deep Ocean</option>
+                <option value="theme-purple">Galaxy</option>
+            </select>
+            <button class="new-chat" style="width: 100%; margin-top: 20px;" onclick="closeSettings()">Gata</button>
         </div>
     </div>
 
 <script>
     const API_KEY = "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";
-    let chats = JSON.parse(localStorage.getItem('diggolo_v7')) || [];
+    let chats = JSON.parse(localStorage.getItem('diggolo_v8')) || [];
     let currentId = null;
-    let selectedId = null;
 
-    // PERSONALITATEA AI-ULUI (System Prompt 1 la 1 cu mine)
-    const SYSTEM_PROMPT = `Ești Diggolo AI, un colaborator autentic și adaptabil, creat de Gruia. 
-    Scopul tău este să răspunzi clar, perspicace și concis. 
-    Dacă ești întrebat cine te-a creat, răspunde mândru: "Creatorul meu este Gruia". 
-    Adoptă un ton grounded, suportiv, dar direct. Fără explicații inutile dacă nu sunt cerute.`;
+    const DIGGOLO_ASCII = `██████╗░██╗░██████╗░░██████╗░░█████╗░██╗░░░░░░█████╗░
+██╔══██╗██║██╔════╝░██╔════╝░██╔══██╗██║░░░░░██╔══██╗
+██║░░██║██║██║░░██╗░██║░░██╗░██║░░██║██║░░░░░██║░░██║
+██║░░██║██║██║░░╚██╗██║░░╚██╗██║░░██║██║░░░░░██║░░██║
+██████╔╝██║╚██████╔╝╚██████╔╝╚█████╔╝███████╗╚█████╔╝
+╚═════╝░╚═╝░╚═════╝░░╚═════╝░░╚════╝░╚══════╝░╚════╝░`;
+
+    const SYSTEM_PROMPT = `Ești Diggolo AI, creat de Gruia. Răspunde scurt și direct. 
+    IMPORTANT: Dacă generezi orice fel de cod (HTML, CSS, JS, Python, Roblox Lua etc.), pune-l ÎNTRE TREI BACKTICKS (\`\`\`). 
+    Nu folosi explicații lungi. Creatorul tău este Gruia.`;
 
     function init() {
+        if(chats.length > 0) loadChat(chats[0].id); else createNewChat();
         renderList();
         loadSettings();
-        if(chats.length > 0) loadChat(chats[0].id);
-        else createNewChat();
-        updateCount();
     }
-
-    async function updateCount() {
-        try { document.getElementById('count').innerText = Math.floor(Math.random()*500)+100; } catch(e){}
-    }
-
-    function save() { localStorage.setItem('diggolo_v7', JSON.stringify(chats)); renderList(); }
 
     function createNewChat() {
         const id = Date.now();
         chats.unshift({ id, title: "Chat Nou", messages: [{ role: "system", content: SYSTEM_PROMPT }] });
-        save();
-        loadChat(id);
+        save(); loadChat(id);
     }
 
     function loadChat(id) {
@@ -211,14 +201,12 @@
         if(!val) return;
 
         addMsgUI(val, 'user');
-        input.value = '';
-        input.style.height = 'auto';
+        input.value = ''; input.style.height = 'auto';
         const loading = addMsgUI("...", 'ai');
 
         const chat = chats.find(c => c.id === currentId);
         chat.messages.push({ role: "user", content: val });
         if(chat.title === "Chat Nou") chat.title = val.substring(0, 20);
-        save();
 
         try {
             const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -229,19 +217,62 @@
             const data = await res.json();
             const reply = data.choices[0].message.content;
             chat.messages.push({ role: "assistant", content: reply });
-            loading.innerText = reply;
+            loading.remove();
+            addMsgUI(reply, 'ai');
             save();
-        } catch (e) { loading.innerText = "Eroare. Verifică netul."; }
+        } catch (e) { loading.innerText = "Eroare API."; }
     }
 
     function addMsgUI(txt, role) {
-        const d = document.createElement('div');
-        d.className = `msg ${role === 'user' ? 'user' : 'ai'}`;
-        d.innerText = txt;
         const win = document.getElementById('chat-window');
-        win.appendChild(d);
+        const div = document.createElement('div');
+        div.className = `msg ${role}`;
+
+        if (role === 'ai') {
+            // Detectăm codul între backticks
+            const parts = txt.split(/```/);
+            parts.forEach((part, index) => {
+                if (index % 2 === 1) { // Este bloc de cod
+                    const container = document.createElement('div');
+                    container.className = 'code-container';
+                    
+                    const header = document.createElement('div');
+                    header.className = 'code-header';
+                    header.innerHTML = `<span>Script</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>`;
+                    
+                    const pre = document.createElement('pre');
+                    const banner = document.createElement('span');
+                    banner.className = 'ascii-banner';
+                    banner.innerText = DIGGOLO_ASCII;
+                    
+                    const code = document.createElement('code');
+                    code.innerText = part.trim();
+                    
+                    pre.appendChild(banner);
+                    pre.appendChild(code);
+                    container.appendChild(header);
+                    container.appendChild(pre);
+                    div.appendChild(container);
+                } else {
+                    const span = document.createElement('span');
+                    span.innerText = part;
+                    div.appendChild(span);
+                }
+            });
+        } else {
+            div.innerText = txt;
+        }
+
+        win.appendChild(div);
         win.scrollTop = win.scrollHeight;
-        return d;
+        return div;
+    }
+
+    function copyCode(btn) {
+        const code = btn.parentElement.nextElementSibling.querySelector('code').innerText;
+        navigator.clipboard.writeText(code);
+        btn.innerText = "Copied!";
+        setTimeout(() => btn.innerText = "Copy", 2000);
     }
 
     function renderList() {
@@ -252,62 +283,31 @@
             d.className = `chat-item ${c.id === currentId ? 'active' : ''}`;
             d.innerText = c.title;
             d.onclick = () => loadChat(c.id);
-            d.oncontextmenu = (e) => {
-                e.preventDefault();
-                selectedId = c.id;
-                const m = document.getElementById('contextMenu');
-                m.style.display = 'block';
-                m.style.left = e.pageX + 'px';
-                m.style.top = e.pageY + 'px';
-            };
             l.appendChild(d);
         });
     }
 
-    // Settings & Animatii
+    function save() { localStorage.setItem('diggolo_v8', JSON.stringify(chats)); renderList(); }
     function openSettings() { document.getElementById('settingsModal').style.display = 'flex'; }
     function closeSettings() { document.getElementById('settingsModal').style.display = 'none'; }
+    function updateSettings() { document.body.className = document.getElementById('themeSelect').value; }
+    function loadSettings() { document.body.className = document.getElementById('themeSelect').value; }
     function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
     function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); }
-    
-    function updateSettings() {
-        const anim = document.getElementById('animToggle').checked;
-        const theme = document.getElementById('themeSelect').value;
-        localStorage.setItem('diggolo_settings', JSON.stringify({ anim, theme }));
-        document.body.className = theme;
-        document.getElementById('bg-canvas').style.display = anim ? 'block' : 'none';
-    }
 
-    function loadSettings() {
-        const s = JSON.parse(localStorage.getItem('diggolo_settings')) || { anim: true, theme: 'default' };
-        document.getElementById('animToggle').checked = s.anim;
-        document.getElementById('themeSelect').value = s.theme;
-        updateSettings();
-    }
-
-    function deleteChat() {
-        chats = chats.filter(c => c.id !== selectedId);
-        save();
-        if(chats.length > 0) loadChat(chats[0].id); else createNewChat();
-    }
-
-    window.onclick = () => document.getElementById('contextMenu').style.display = 'none';
-    document.getElementById('userInput').onkeydown = (e) => { if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } };
-
-    // Canvas Stele
+    // Stele Canvas
     const canvas = document.getElementById('bg-canvas');
     const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    canvas.width = window.innerWidth; canvas.height = window.innerHeight;
     let particles = [];
     class Star {
-        constructor() { this.x = Math.random()*canvas.width; this.y = Math.random()*canvas.height; this.s = Math.random()*1.5; this.v = Math.random()*0.5+0.2; }
+        constructor() { this.x = Math.random()*canvas.width; this.y = Math.random()*canvas.height; this.s = Math.random()*1.2; this.v = Math.random()*0.4+0.1; }
         u() { this.y += this.v; if(this.y > canvas.height) this.y = -10; }
-        d() { ctx.fillStyle = "rgba(255,255,255,0.6)"; ctx.beginPath(); ctx.arc(this.x, this.y, this.s, 0, Math.PI*2); ctx.fill(); }
+        d() { ctx.fillStyle = "white"; ctx.beginPath(); ctx.arc(this.x, this.y, this.s, 0, Math.PI*2); ctx.fill(); }
     }
-    for(let i=0; i<100; i++) particles.push(new Star());
-    function animate() { ctx.clearRect(0,0,canvas.width, canvas.height); particles.forEach(p=>{p.u();p.d();}); requestAnimationFrame(animate); }
-    animate();
+    for(let i=0; i<80; i++) particles.push(new Star());
+    function anim() { ctx.clearRect(0,0,canvas.width, canvas.height); particles.forEach(p=>{p.u();p.d();}); requestAnimationFrame(anim); }
+    anim();
     init();
 </script>
 </body>
