@@ -18,50 +18,31 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
         body { background: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; }
 
-        /* SIDEBAR */
-        .sidebar { width: 280px; background: var(--sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 15px; transition: 0.3s; }
+        .sidebar { width: 280px; background: var(--sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 15px; }
         .new-chat { background: var(--accent); color: white; border: none; padding: 12px; border-radius: 10px; cursor: pointer; font-weight: 600; margin-bottom: 15px; transition: 0.2s; }
-        .new-chat:hover { opacity: 0.9; transform: translateY(-1px); }
+        .new-chat:hover { opacity: 0.9; }
 
-        .search-container { position: relative; margin-bottom: 20px; }
-        .search-container input { width: 100%; background: #18181b; border: 1px solid var(--border); padding: 10px; border-radius: 8px; color: white; font-size: 14px; outline: none; }
+        .search-container { margin-bottom: 20px; }
+        .search-container input { width: 100%; background: #18181b; border: 1px solid var(--border); padding: 10px; border-radius: 8px; color: white; outline: none; }
 
         .chat-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; }
         .chat-item { padding: 10px; border-radius: 8px; cursor: pointer; font-size: 14px; color: var(--muted); transition: 0.2s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .chat-item:hover, .chat-item.active { background: var(--card); color: white; }
 
-        .sidebar-footer { border-top: 1px solid var(--border); padding-top: 15px; display: flex; flex-direction: column; gap: 10px; }
-        .buy-pro { background: linear-gradient(45deg, #4f46e5, #9333ea); border: none; padding: 10px; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; animation: glow 3s infinite; }
-
-        /* MAIN */
         .main { flex: 1; display: flex; flex-direction: column; position: relative; }
         .header { padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
-        .settings-btn { cursor: pointer; font-size: 20px; opacity: 0.7; transition: 0.3s; }
-        .settings-btn:hover { opacity: 1; transform: rotate(45deg); }
-
-        #chat-window { flex: 1; padding: 40px 15%; overflow-y: auto; display: flex; flex-direction: column; gap: 30px; }
-        .msg { max-width: 85%; line-height: 1.6; animation: fadeIn 0.4s ease forwards; }
-        .user { align-self: flex-end; color: white; font-weight: 500; border-right: 3px solid var(--accent); padding-right: 15px; }
-        .ai { align-self: flex-start; background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid var(--border); }
-
-        /* INPUT */
-        .input-area { padding: 20px 15% 40px; background: linear-gradient(transparent, var(--bg) 40%); }
-        .input-box { background: #18181b; border: 1px solid var(--border); border-radius: 15px; display: flex; padding: 12px 18px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        input#userInput { flex: 1; background: transparent; border: none; color: white; font-size: 16px; outline: none; }
-        #sendBtn { color: var(--accent); cursor: pointer; font-weight: bold; }
-
-        /* SETTINGS MODAL */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 100; align-items: center; justify-content: center; }
-        .modal-content { background: var(--sidebar); padding: 30px; border-radius: 20px; border: 1px solid var(--border); width: 400px; }
-        .modal-content h3 { margin-bottom: 20px; }
-        .setting-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .close-modal { background: var(--accent); border: none; padding: 8px 15px; border-radius: 5px; color: white; cursor: pointer; margin-top: 10px; width: 100%; }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes glow { 0%, 100% { box-shadow: 0 0 5px rgba(147, 51, 234, 0.3); } 50% { box-shadow: 0 0 20px rgba(147, 51, 234, 0.6); } }
         
-        pre { background: #000; padding: 15px; border-radius: 10px; overflow-x: auto; margin: 10px 0; border: 1px solid #333; position: relative; }
-        .copy { position: absolute; top: 5px; right: 5px; font-size: 10px; background: #333; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; }
+        #chat-window { flex: 1; padding: 40px 15%; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; }
+        .msg { max-width: 85%; padding: 15px; border-radius: 12px; line-height: 1.5; animation: fadeIn 0.3s ease; }
+        .user { align-self: flex-end; background: var(--accent); color: white; border-bottom-right-radius: 2px; }
+        .ai { align-self: flex-start; background: var(--card); border: 1px solid var(--border); border-bottom-left-radius: 2px; }
+
+        .input-area { padding: 20px 15% 40px; }
+        .input-box { background: #18181b; border: 1px solid var(--border); border-radius: 15px; display: flex; padding: 10px 15px; align-items: center; }
+        input#userInput { flex: 1; background: transparent; border: none; color: white; font-size: 16px; outline: none; padding: 10px; }
+        #sendBtn { color: var(--accent); cursor: pointer; font-weight: bold; padding: 10px; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -69,41 +50,19 @@
     <div class="sidebar">
         <button class="new-chat" onclick="createNewChat()">+ Chat Nou</button>
         <div class="search-container">
-            <input type="text" id="search" placeholder="Caută în conversatii..." oninput="filterChats()">
+            <input type="text" id="search" placeholder="Caută..." oninput="filterChats()">
         </div>
         <div class="chat-list" id="chatList"></div>
-        <div class="sidebar-footer">
-            <button class="buy-pro">💎 Buy Diggolo Pro</button>
-            <p style="font-size: 11px; color: var(--muted); text-align: center;">Versiune: Standard 2.0</p>
-        </div>
     </div>
 
     <div class="main">
-        <div class="header">
-            <h2>Diggolo-AI</h2>
-            <div class="settings-btn" onclick="toggleModal()">⚙️</div>
-        </div>
+        <div class="header"><h2>Diggolo-AI Standard</h2></div>
         <div id="chat-window"></div>
         <div class="input-area">
             <div class="input-box">
-                <input type="text" id="userInput" placeholder="Întreabă orice...">
+                <input type="text" id="userInput" placeholder="Scrie un mesaj aici...">
                 <div id="sendBtn">TRIMITE</div>
             </div>
-        </div>
-    </div>
-
-    <div class="modal" id="settingsModal">
-        <div class="modal-content">
-            <h3>Setări Profil</h3>
-            <div class="setting-row">
-                <span>Nume Utilizator:</span>
-                <input type="text" id="userName" style="background: #111; border: 1px solid #333; color: white; padding: 5px; border-radius: 4px;" placeholder="Gruia">
-            </div>
-            <div class="setting-row">
-                <span>Temă Dark:</span>
-                <input type="checkbox" checked disabled>
-            </div>
-            <button class="close-modal" onclick="saveSettings()">Salvează și Închide</button>
         </div>
     </div>
 
@@ -112,10 +71,7 @@
     let chats = JSON.parse(localStorage.getItem('diggolo_chats')) || [];
     let currentChatId = null;
 
-    // Inițializare
     function init() {
-        const savedName = localStorage.getItem('user_name') || "Utilizator";
-        document.getElementById('userName').value = savedName;
         renderChatList();
         if(chats.length > 0) loadChat(chats[0].id);
         else createNewChat();
@@ -123,7 +79,7 @@
 
     function createNewChat() {
         const id = Date.now();
-        const newChat = { id, title: "Chat Nou", messages: [{ role: "system", content: "Ești Diggolo AI. Autor: Gruia. Reține contextul și explică ce faci." }] };
+        const newChat = { id, title: "Chat Nou", messages: [{ role: "system", content: "Ești Diggolo AI. Autor: Gruia (gruiaa69)." }] };
         chats.unshift(newChat);
         saveAndRender();
         loadChat(id);
@@ -134,7 +90,6 @@
         const chat = chats.find(c => c.id === id);
         const window = document.getElementById('chat-window');
         window.innerHTML = '';
-        
         chat.messages.forEach(m => {
             if(m.role !== 'system') addMessageToUI(m.content, m.role === 'user' ? 'user' : 'ai');
         });
@@ -164,9 +119,9 @@
             const reply = data.choices[0].message.content;
             
             chat.messages.push({ role: "assistant", content: reply });
-            formatAIResponse(loading, reply);
+            loading.innerText = reply;
             saveAndRender();
-        } catch (e) { loading.innerText = "Eroare API."; }
+        } catch (e) { loading.innerText = "Eroare la trimitere."; }
     }
 
     function addMessageToUI(text, type) {
@@ -179,10 +134,9 @@
         return div;
     }
 
-    function formatAIResponse(el, text) {
-        if(text.includes("```")) {
-            el.innerHTML = text.split("```").map((p, i) => i % 2 === 1 ? `<pre><code>${p.trim()}</code><button class="copy" onclick="navigator.clipboard.writeText(this.previousElementSibling.innerText)">Copy</button></pre>` : p).join("");
-        } else { el.innerText = text; }
+    function saveAndRender() {
+        localStorage.setItem('diggolo_chats', JSON.stringify(chats));
+        renderChatList();
     }
 
     function renderChatList() {
@@ -204,19 +158,11 @@
         });
     }
 
-    function saveAndRender() {
-        localStorage.setItem('diggolo_chats', JSON.stringify(chats));
-        renderChatList();
-    }
+    document.getElementById('sendBtn').addEventListener('click', sendMessage);
+    document.getElementById('userInput').addEventListener('keypress', (e) => {
+        if(e.key === 'Enter') sendMessage();
+    });
 
-    function toggleModal() { document.getElementById('settingsModal').style.display = 'flex'; }
-    function saveSettings() {
-        localStorage.setItem('user_name', document.getElementById('userName').value);
-        document.getElementById('settingsModal').style.display = 'none';
-    }
-
-    document.getElementById('sendBtn').onclick = sendMessage;
-    document.getElementById('userInput').onkeydown = (e) => e.key === 'Enter' && sendMessage();
     init();
 </script>
 </body>
