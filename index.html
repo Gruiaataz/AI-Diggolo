@@ -15,80 +15,118 @@
             --border: #27272a;
         }
 
+        /* Teme */
+        body.theme-blue { --bg: #0f172a; --accent: #38bdf8; }
+        body.theme-purple { --bg: #1e1b4b; --accent: #818cf8; }
+
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        body { background: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; }
+        body { background: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; transition: 0.5s; }
+
+        /* Background Animat */
+        #bg-canvas { position: fixed; inset: 0; pointer-events: none; z-index: -1; opacity: 0; transition: 1s; }
+        #bg-canvas.active { opacity: 0.3; }
 
         /* SIDEBAR */
         .sidebar { width: 280px; background: var(--sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 15px; z-index: 10; }
-        .new-chat { background: var(--accent); color: white; border: none; padding: 12px; border-radius: 10px; cursor: pointer; font-weight: 600; margin-bottom: 15px; transition: 0.2s; }
+        .new-chat { background: var(--accent); color: white; border: none; padding: 12px; border-radius: 10px; cursor: pointer; font-weight: 600; margin-bottom: 20px; }
         
         .chat-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; }
-        .chat-item { padding: 12px; border-radius: 8px; cursor: pointer; font-size: 14px; color: var(--muted); transition: 0.2s; position: relative; }
+        .chat-item { padding: 12px; border-radius: 8px; cursor: pointer; font-size: 14px; color: var(--muted); transition: 0.2s; }
         .chat-item:hover, .chat-item.active { background: var(--card); color: white; }
 
         /* CONTEXT MENU */
         #contextMenu {
-            display: none; position: fixed; background: #212123; border: 1px solid var(--border);
+            display: none; position: fixed; background: #18181b; border: 1px solid var(--border);
             border-radius: 8px; z-index: 1000; width: 180px; box-shadow: 0 10px 20px rgba(0,0,0,0.5);
         }
-        .menu-item { padding: 10px 15px; cursor: pointer; font-size: 13px; transition: 0.2s; }
+        .menu-item { padding: 10px 15px; cursor: pointer; font-size: 13px; }
         .menu-item:hover { background: var(--accent); color: white; }
-        .menu-item.delete { color: #ff4d4d; }
-        .menu-item.delete:hover { background: #ff4d4d; color: white; }
 
         /* MAIN */
-        .main { flex: 1; display: flex; flex-direction: column; }
-        #chat-window { flex: 1; padding: 40px 15%; overflow-y: auto; display: flex; flex-direction: column; gap: 25px; }
-        .msg { max-width: 85%; padding: 15px 20px; border-radius: 15px; line-height: 1.6; animation: fadeIn 0.3s ease; }
-        .user { align-self: flex-end; background: var(--accent); color: white; border-bottom-right-radius: 2px; }
-        .ai { align-self: flex-start; background: var(--card); border: 1px solid var(--border); border-bottom-left-radius: 2px; }
+        .main { flex: 1; display: flex; flex-direction: column; position: relative; }
+        .header { padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); background: rgba(9,9,11,0.8); backdrop-filter: blur(10px); }
+        
+        #chat-window { flex: 1; padding: 40px 15%; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; }
+        .msg { max-width: 85%; padding: 15px 20px; border-radius: 15px; line-height: 1.6; animation: fadeIn 0.3s ease; word-wrap: break-word; }
+        .user { align-self: flex-end; background: var(--accent); color: white; }
+        .ai { align-self: flex-start; background: var(--card); border: 1px solid var(--border); }
 
+        /* INPUT FIX */
         .input-area { padding: 20px 15% 40px; }
-        .input-box { background: #18181b; border: 1px solid var(--border); border-radius: 15px; display: flex; padding: 10px 15px; }
-        input { flex: 1; background: transparent; border: none; color: white; font-size: 16px; outline: none; padding: 10px; }
+        .input-box { background: #18181b; border: 1px solid var(--border); border-radius: 15px; display: flex; padding: 5px 15px; align-items: center; }
+        #userInput { flex: 1; background: transparent; border: none; color: white; font-size: 16px; outline: none; padding: 15px; }
         #sendBtn { color: var(--accent); cursor: pointer; font-weight: bold; padding: 10px; }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* MODAL SETTINGS */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 2000; align-items: center; justify-content: center; }
+        .modal-content { background: var(--sidebar); padding: 30px; border-radius: 20px; border: 1px solid var(--border); width: 400px; }
+        .setting-row { display: flex; justify-content: space-between; margin-bottom: 20px; align-items: center; }
 
-        /* PRINT / PDF STYLES */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; } }
+
         @media print {
             .sidebar, .input-area, .header, #contextMenu { display: none !important; }
-            body { background: white; color: black; }
-            #chat-window { padding: 0; display: block; }
-            .msg { border: 1px solid #ccc; margin-bottom: 10px; color: black !important; background: transparent !important; }
+            body { background: white !important; }
+            .msg { color: black !important; border: 1px solid #eee; margin: 10px 0; }
         }
     </style>
 </head>
 <body>
 
+    <canvas id="bg-canvas"></canvas>
+
     <div id="contextMenu">
-        <div class="menu-item" onclick="downloadPDF()">📄 Distribuie (PDF)</div>
-        <div class="menu-item delete" onclick="deleteCurrentChat()">🗑️ Șterge Conversația</div>
+        <div class="menu-item" onclick="downloadPDF()">📄 Descarcă PDF</div>
+        <div class="menu-item" style="color: #ff4d4d;" onclick="deleteChat()">🗑️ Șterge</div>
     </div>
 
     <div class="sidebar">
         <button class="new-chat" onclick="createNewChat()">+ Chat Nou</button>
         <div class="chat-list" id="chatList"></div>
+        <button class="new-chat" style="background: #27272a; margin-top: auto;" onclick="openSettings()">⚙️ Setări</button>
     </div>
 
     <div class="main">
+        <div class="header">
+            <h2>Diggolo-AI <span style="font-weight: 400; font-size: 14px; color: var(--muted);">Standard</span></h2>
+        </div>
         <div id="chat-window"></div>
         <div class="input-area">
             <div class="input-box">
-                <input type="text" id="userInput" placeholder="Scrie un mesaj...">
+                <input type="text" id="userInput" placeholder="Trimite un mesaj...">
                 <div id="sendBtn">TRIMITE</div>
             </div>
         </div>
     </div>
 
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <h3 style="margin-bottom: 20px;">Setări Background</h3>
+            <div class="setting-row">
+                <span>Animație Fundal:</span>
+                <input type="checkbox" id="animToggle" onchange="updateSettings()">
+            </div>
+            <div class="setting-row">
+                <span>Culoare Temă:</span>
+                <select id="themeSelect" onchange="updateSettings()" style="background: #000; color: #fff; padding: 5px;">
+                    <option value="default">Default Dark</option>
+                    <option value="theme-blue">Ocean Blue</option>
+                    <option value="theme-purple">Deep Purple</option>
+                </select>
+            </div>
+            <button class="new-chat" style="width: 100%;" onclick="closeSettings()">Închide</button>
+        </div>
+    </div>
+
 <script>
     const API_KEY = "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";
-    let chats = JSON.parse(localStorage.getItem('diggolo_v4')) || [];
-    let currentChatId = null;
-    let menuTargetId = null;
+    let chats = JSON.parse(localStorage.getItem('diggolo_pro_v5')) || [];
+    let currentId = null;
+    let selectedId = null;
 
     function init() {
-        renderChatList();
+        renderList();
+        loadSettings();
         if(chats.length > 0) loadChat(chats[0].id);
         else createNewChat();
     }
@@ -101,26 +139,26 @@
     }
 
     function loadChat(id) {
-        currentChatId = id;
+        currentId = id;
         const chat = chats.find(c => c.id === id);
         const win = document.getElementById('chat-window');
         win.innerHTML = '';
         chat.messages.forEach(m => { if(m.role !== 'system') addMsgUI(m.content, m.role); });
-        renderChatList();
+        renderList();
     }
 
-    async function sendMessage() {
-        const input = document.getElementById('userInput');
-        const text = input.value.trim();
-        if(!text) return;
+    async function send() {
+        const el = document.getElementById('userInput');
+        const val = el.value.trim();
+        if(!val) return;
 
-        addMsgUI(text, 'user');
-        input.value = '';
-        const loading = addMsgUI("Se Incarca Mesaj-ul...", 'ai');
+        addMsgUI(val, 'user');
+        el.value = '';
+        const loading = addMsgUI("Se Încarcă...", 'ai');
 
-        const chat = chats.find(c => c.id === currentChatId);
-        chat.messages.push({ role: "user", content: text });
-        if(chat.title === "Chat Nou") chat.title = text.substring(0, 25);
+        const chat = chats.find(c => c.id === currentId);
+        chat.messages.push({ role: "user", content: val });
+        if(chat.title === "Chat Nou") chat.title = val.substring(0, 20);
 
         try {
             const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -133,61 +171,93 @@
             chat.messages.push({ role: "assistant", content: reply });
             loading.innerText = reply;
             save();
-        } catch (e) { loading.innerText = "Eroare API."; }
+        } catch (e) { loading.innerText = "Eroare la conexiune!"; }
     }
 
-    function addMsgUI(text, role) {
-        const div = document.createElement('div');
-        div.className = `msg ${role === 'user' ? 'user' : 'ai'}`;
-        div.innerText = text;
-        document.getElementById('chat-window').appendChild(div);
+    function addMsgUI(txt, role) {
+        const d = document.createElement('div');
+        d.className = `msg ${role === 'user' ? 'user' : 'ai'}`;
+        d.innerText = txt;
+        document.getElementById('chat-window').appendChild(d);
         document.getElementById('chat-window').scrollTop = document.getElementById('chat-window').scrollHeight;
-        return div;
+        return d;
     }
 
-    function renderChatList() {
-        const list = document.getElementById('chatList');
-        list.innerHTML = '';
+    function renderList() {
+        const l = document.getElementById('chatList');
+        l.innerHTML = '';
         chats.forEach(c => {
-            const item = document.createElement('div');
-            item.className = `chat-item ${c.id === currentChatId ? 'active' : ''}`;
-            item.innerText = c.title;
-            item.oncontextmenu = (e) => showMenu(e, c.id);
-            item.onclick = () => loadChat(c.id);
-            list.appendChild(item);
+            const d = document.createElement('div');
+            d.className = `chat-item ${c.id === currentId ? 'active' : ''}`;
+            d.innerText = c.title;
+            d.onclick = () => loadChat(c.id);
+            d.oncontextmenu = (e) => {
+                e.preventDefault();
+                selectedId = c.id;
+                const m = document.getElementById('contextMenu');
+                m.style.display = 'block';
+                m.style.left = e.pageX + 'px';
+                m.style.top = e.pageY + 'px';
+            };
+            l.appendChild(d);
         });
     }
 
-    // CONTEXT MENU LOGIC
-    function showMenu(e, id) {
-        e.preventDefault();
-        menuTargetId = id;
-        const menu = document.getElementById('contextMenu');
-        menu.style.display = 'block';
-        menu.style.left = `${e.pageX}px`;
-        menu.style.top = `${e.pageY}px`;
+    // SETTINGS & BACKGROUND
+    function openSettings() { document.getElementById('settingsModal').style.display = 'flex'; }
+    function closeSettings() { document.getElementById('settingsModal').style.display = 'none'; }
+    
+    function updateSettings() {
+        const anim = document.getElementById('animToggle').checked;
+        const theme = document.getElementById('themeSelect').value;
+        localStorage.setItem('diggolo_settings', JSON.stringify({ anim, theme }));
+        applySettings(anim, theme);
     }
 
-    window.onclick = () => document.getElementById('contextMenu').style.display = 'none';
+    function loadSettings() {
+        const s = JSON.parse(localStorage.getItem('diggolo_settings')) || { anim: true, theme: 'default' };
+        document.getElementById('animToggle').checked = s.anim;
+        document.getElementById('themeSelect').value = s.theme;
+        applySettings(s.anim, s.theme);
+    }
 
-    function deleteCurrentChat() {
-        chats = chats.filter(c => c.id !== menuTargetId);
+    function applySettings(anim, theme) {
+        document.body.className = theme;
+        const canvas = document.getElementById('bg-canvas');
+        if(anim) canvas.classList.add('active');
+        else canvas.classList.remove('active');
+    }
+
+    // Context Menu Actions
+    function deleteChat() {
+        chats = chats.filter(c => c.id !== selectedId);
         save();
         if(chats.length > 0) loadChat(chats[0].id);
         else createNewChat();
     }
+    function downloadPDF() { window.print(); }
 
-    function downloadPDF() {
-        // Redirijează către funcția de print a browserului care permite Save as PDF
-        window.print();
-    }
+    function save() { localStorage.setItem('diggolo_pro_v5', JSON.stringify(chats)); renderList(); }
+    window.onclick = () => document.getElementById('contextMenu').style.display = 'none';
 
-    function save() { localStorage.setItem('diggolo_v4', JSON.stringify(chats)); renderChatList(); }
-
-    document.getElementById('sendBtn').onclick = sendMessage;
-    document.getElementById('userInput').onkeydown = (e) => e.key === 'Enter' && sendMessage();
+    document.getElementById('sendBtn').onclick = send;
+    document.getElementById('userInput').onkeydown = (e) => { if(e.key === 'Enter') send(); };
 
     init();
+
+    // Canvas Animation (Matrix/Dots style)
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    function draw() {
+        ctx.fillStyle = 'rgba(9, 9, 11, 0.1)';
+        ctx.fillRect(0,0,canvas.width, canvas.height);
+        ctx.fillStyle = '#3b82f6';
+        for(let i=0; i<20; i++) ctx.fillRect(Math.random()*canvas.width, Math.random()*canvas.height, 2, 2);
+        requestAnimationFrame(draw);
+    }
+    draw();
 </script>
 </body>
 </html>
