@@ -20,7 +20,7 @@
         body { 
             background: var(--bg); 
             color: var(--text); 
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            font-family: 'Segoe UI', sans-serif; 
             display: flex; 
             flex-direction: column;
             justify-content: center; 
@@ -50,18 +50,8 @@
             text-align: center;
         }
 
-        header h1 {
-            margin: 0;
-            font-size: 1.5rem;
-            color: var(--accent);
-            letter-spacing: 1px;
-        }
-
-        header p {
-            margin: 5px 0 0;
-            font-size: 0.85rem;
-            opacity: 0.7;
-        }
+        header h1 { margin: 0; font-size: 1.5rem; color: var(--accent); }
+        header p { margin: 5px 0 0; font-size: 0.85rem; opacity: 0.7; }
 
         #chat { 
             flex: 1; 
@@ -80,30 +70,13 @@
             font-size: 15px; 
             line-height: 1.5;
             max-width: 85%; 
-            position: relative; 
             animation: fadeIn 0.3s ease;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .user { 
-            background: var(--green); 
-            align-self: flex-end; 
-            color: white; 
-            border-bottom-right-radius: 2px;
-        }
-
-        .ai { 
-            background: #2d333b; 
-            align-self: flex-start; 
-            border: 1px solid var(--border); 
-            border-bottom-left-radius: 2px;
-            width: fit-content;
-            max-width: 95%;
-        }
+        .user { background: var(--green); align-self: flex-end; color: white; border-bottom-right-radius: 2px; }
+        .ai { background: #2d333b; align-self: flex-start; border: 1px solid var(--border); border-bottom-left-radius: 2px; }
 
         pre { 
             background: #000; 
@@ -114,57 +87,20 @@
             position: relative; 
             margin-top: 10px; 
             border: 1px solid #444;
-            font-family: 'Consolas', 'Monaco', monospace;
-            font-size: 13px;
+            font-family: monospace;
         }
 
         .copy-btn { 
-            position: absolute; 
-            top: 8px; 
-            right: 8px; 
+            position: absolute; top: 8px; right: 8px; 
             background: rgba(88, 166, 255, 0.2); 
-            color: var(--accent); 
-            border: 1px solid var(--accent); 
-            padding: 4px 12px; 
-            border-radius: 4px; 
-            cursor: pointer; 
-            font-size: 11px; 
-            transition: all 0.2s;
-            font-weight: bold;
+            color: var(--accent); border: 1px solid var(--accent); 
+            padding: 4px 12px; border-radius: 4px; cursor: pointer; 
+            font-size: 11px; font-weight: bold;
         }
 
-        .copy-btn:hover { 
-            background: var(--accent); 
-            color: white; 
-        }
-
-        .input-area { 
-            display: flex; 
-            padding: 20px; 
-            background: var(--header-bg); 
-            border-top: 1px solid var(--border); 
-            gap: 10px;
-        }
-
-        input { 
-            flex: 1; 
-            padding: 14px; 
-            border: 1px solid var(--border); 
-            border-radius: 8px; 
-            background: var(--bg); 
-            color: white; 
-            outline: none; 
-        }
-
-        button#send { 
-            padding: 0 25px; 
-            background: var(--accent); 
-            border: none; 
-            border-radius: 8px; 
-            color: white; 
-            font-weight: bold; 
-            cursor: pointer; 
-        }
+        .input-area { display: flex; padding: 20px; background: var(--header-bg); border-top: 1px solid var(--border); gap: 10px; }
+        input { flex: 1; padding: 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: white; outline: none; }
+        button#send { padding: 0 25px; background: var(--accent); border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; }
 
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 10px; }
@@ -175,13 +111,13 @@
 <div class="container">
     <header>
         <h1>AI-DIGGOLO PRO</h1>
-        <p>Author: <strong>Gruia-Alex</strong></p>
+        <p>Creator: <strong>Gruia-Alex</strong></p>
     </header>
     <div id="chat">
-        <div class="msg ai">Salut! Sunt Diggolo AI. Cum te pot ajuta astăzi?</div>
+        <div class="msg ai">Salut! Sunt Diggolo AI. Cu ce te pot ajuta?</div>
     </div>
     <div class="input-area">
-        <input type="text" id="in" placeholder="Scrie ceva..." autocomplete="off">
+        <input type="text" id="in" placeholder="Pune o întrebare..." autocomplete="off">
         <button id="send">Trimite</button>
     </div>
 </div>
@@ -200,21 +136,18 @@
         addMsg(val, 'user');
         input.value = "";
         
-        // S-a schimbat mesajul de încărcare aici
+        // Mesaj de încărcare personalizat
         const loading = addMsg("Se Incarca Mesaj-ul...", 'ai');
 
         try {
             const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                 method: "POST",
-                headers: { 
-                    "Authorization": `Bearer ${API_KEY}`, 
-                    "Content-Type": "application/json" 
-                },
+                headers: { "Authorization": `Bearer ${API_KEY}`, "Content-Type": "application/json" },
                 body: JSON.stringify({
                     model: "llama-3.3-70b-versatile",
                     messages: [{
                         role: "system", 
-                        content: "Ești Diggolo AI. Autorul tău este Gruia, cunoscut pe rețelele de socializare cu numele de 'gruiaa69'. Dacă ești întrebat de autor, răspunde exact: 'Autorul meu este Gruia, cunoscut pe rețelele de socializare cu numele de gruiaa69'. Când scrii cod, pune mereu '-- Author: Diggolo AI' la început. Dacă cererea e despre un script, scrie DOAR codul fără alte explicații."
+                        content: "Ești Diggolo AI. DOAR dacă ești întrebat despre autor/creator, răspunde: 'Autorul meu este Gruia, cunoscut pe rețelele de socializare cu numele de gruiaa69'. În rest, răspunde normal la orice întrebare. Dacă scrii cod, pune '-- Author: Diggolo AI' la început și trimite DOAR codul."
                     }, {
                         role: "user", content: val
                     }]
@@ -233,7 +166,7 @@
             }
 
         } catch (e) {
-            loading.innerText = "Eroare! Verifică conexiunea.";
+            loading.innerText = "Eroare de conexiune!";
         }
         chat.scrollTop = chat.scrollHeight;
     }
@@ -253,10 +186,7 @@
             const originalText = button.innerText;
             button.innerText = "Copied!";
             button.style.background = "#238636";
-            setTimeout(() => {
-                button.innerText = originalText;
-                button.style.background = "";
-            }, 2000);
+            setTimeout(() => { button.innerText = originalText; button.style.background = ""; }, 2000);
         });
     }
 
