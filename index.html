@@ -2,34 +2,203 @@
 <html lang="ro">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI-Diggolo Pro | Edition</title>
     <style>
-        :root { --bg: #0d1117; --card: #161b22; --accent: #58a6ff; --text: #c9d1d9; --green: #238636; }
-        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .container { width: 95%; max-width: 550px; height: 85vh; background: var(--card); border: 1px solid #30363d; border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        header { padding: 15px; background: #21262d; border-bottom: 1px solid #30363d; text-align: center; }
-        #chat { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
-        .msg { padding: 12px; border-radius: 10px; font-size: 15px; max-width: 85%; position: relative; }
-        .user { background: var(--green); align-self: flex-end; color: white; }
-        .ai { background: #30363d; align-self: flex-start; border: 1px solid #444; width: 100%; }
-        
-        /* Stil pentru cod */
-        pre { background: #000; color: #7ee787; padding: 15px; border-radius: 8px; overflow-x: auto; position: relative; margin-top: 10px; border: 1px solid #58a6ff; }
-        .copy-btn { position: absolute; top: 5px; right: 5px; background: #58a6ff; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; }
-        .copy-btn:hover { background: #1f6feb; }
+        :root { 
+            --bg: #0d1117; 
+            --card: #161b22; 
+            --accent: #58a6ff; 
+            --text: #c9d1d9; 
+            --green: #238636; 
+            --border: #30363d;
+            --header-bg: #21262d;
+        }
 
-        .input-area { display: flex; padding: 15px; background: #161b22; border-top: 1px solid #30363d; }
-        input { flex: 1; padding: 12px; border: 1px solid #30363d; border-radius: 6px; background: #0d1117; color: white; outline: none; }
-        button#send { margin-left: 10px; padding: 0 20px; background: var(--accent); border: none; border-radius: 6px; color: white; font-weight: bold; cursor: pointer; }
+        * { box-sizing: border-box; }
+
+        body { 
+            background: var(--bg); 
+            color: var(--text); 
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            display: flex; 
+            flex-direction: column;
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            margin: 0; 
+            overflow: hidden;
+        }
+
+        .container { 
+            width: 95%; 
+            max-width: 650px; 
+            height: 85vh; 
+            background: var(--card); 
+            border: 1px solid var(--border); 
+            border-radius: 16px; 
+            display: flex; 
+            flex-direction: column; 
+            overflow: hidden; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6); 
+        }
+
+        header { 
+            padding: 20px; 
+            background: var(--header-bg); 
+            border-bottom: 1px solid var(--border); 
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: var(--accent);
+            letter-spacing: 1px;
+        }
+
+        header p {
+            margin: 5px 0 0;
+            font-size: 0.85rem;
+            opacity: 0.7;
+        }
+
+        #chat { 
+            flex: 1; 
+            padding: 20px; 
+            overflow-y: auto; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px; 
+            background-image: radial-gradient(circle at 2px 2px, #1f242c 1px, transparent 0);
+            background-size: 24px 24px;
+        }
+
+        .msg { 
+            padding: 14px 18px; 
+            border-radius: 14px; 
+            font-size: 15px; 
+            line-height: 1.5;
+            max-width: 85%; 
+            position: relative; 
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .user { 
+            background: var(--green); 
+            align-self: flex-end; 
+            color: white; 
+            border-bottom-right-radius: 2px;
+        }
+
+        .ai { 
+            background: #2d333b; 
+            align-self: flex-start; 
+            border: 1px solid var(--border); 
+            border-bottom-left-radius: 2px;
+            width: fit-content;
+            max-width: 95%;
+        }
+
+        pre { 
+            background: #000; 
+            color: #7ee787; 
+            padding: 40px 15px 15px; 
+            border-radius: 8px; 
+            overflow-x: auto; 
+            position: relative; 
+            margin-top: 10px; 
+            border: 1px solid #444;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 13px;
+        }
+
+        pre::before {
+            content: "LUA SCRIPT";
+            position: absolute;
+            top: 10px;
+            left: 15px;
+            font-size: 10px;
+            color: #888;
+            font-weight: bold;
+        }
+
+        .copy-btn { 
+            position: absolute; 
+            top: 8px; 
+            right: 8px; 
+            background: rgba(88, 166, 255, 0.2); 
+            color: var(--accent); 
+            border: 1px solid var(--accent); 
+            padding: 4px 12px; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            font-size: 11px; 
+            transition: all 0.2s;
+            font-weight: bold;
+        }
+
+        .copy-btn:hover { 
+            background: var(--accent); 
+            color: white; 
+        }
+
+        .input-area { 
+            display: flex; 
+            padding: 20px; 
+            background: var(--header-bg); 
+            border-top: 1px solid var(--border); 
+            gap: 10px;
+        }
+
+        input { 
+            flex: 1; 
+            padding: 14px; 
+            border: 1px solid var(--border); 
+            border-radius: 8px; 
+            background: var(--bg); 
+            color: white; 
+            outline: none; 
+            transition: border 0.2s;
+        }
+
+        input:focus { border-color: var(--accent); }
+
+        button#send { 
+            padding: 0 25px; 
+            background: var(--accent); 
+            border: none; 
+            border-radius: 8px; 
+            color: white; 
+            font-weight: bold; 
+            cursor: pointer; 
+            transition: transform 0.1s, background 0.2s;
+        }
+
+        button#send:hover { background: #4791e6; }
+        button#send:active { transform: scale(0.95); }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 10px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <header><strong style="color: var(--accent);">AI-DIGGOLO PRO</strong></header>
-    <div id="chat"></div>
+    <header>
+        <h1>AI-DIGGOLO PRO</h1>
+        <p>Author: <strong>Gruia-Alex</strong></p>
+    </header>
+    <div id="chat">
+        <div class="msg ai">Salut! Sunt Diggolo AI. Sunt gata să discutam orice vrei tu!</div>
+    </div>
     <div class="input-area">
-        <input type="text" id="in" placeholder="Cere un script de Roblox...">
+        <input type="text" id="in" placeholder="Ex: ce faci Diggolo?.." autocomplete="off">
         <button id="send">Trimite</button>
     </div>
 </div>
@@ -39,7 +208,6 @@
     const input = document.getElementById('in');
     const btn = document.getElementById('send');
 
-    // FOLOSEȘTE CHEIA TA DE LA GROQ AICI
     const API_KEY = "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"; 
 
     async function ask() {
@@ -48,27 +216,31 @@
 
         addMsg(val, 'user');
         input.value = "";
-        const loading = addMsg("Diggolo AI generează codul...", 'ai');
+        
+        const loading = addMsg("Diggolo AI scrie scriptul...", 'ai');
 
         try {
             const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                 method: "POST",
-                headers: { "Authorization": `Bearer ${API_KEY}`, "Content-Type": "application/json" },
+                headers: { 
+                    "Authorization": `Bearer ${API_KEY}`, 
+                    "Content-Type": "application/json" 
+                },
                 body: JSON.stringify({
                     model: "llama-3.3-70b-versatile",
                     messages: [{
                         role: "system", 
-                        content: "Ești Diggolo AI. Când scrii cod, pune mereu '-- Author: Diggolo AI' la început. Dacă cererea e despre Roblox, scrie DOAR codul într-un bloc de cod."
+                        content: "Ești Diggolo AI. Când scrii cod, pune mereu '-- Author: Diggolo AI' la începutul fiecărui script. Dacă cererea este despre Roblox, scrie DOAR codul într-un bloc de cod markdown (```lua ... ```), fără alte explicații în afara codului."
                     }, {
                         role: "user", content: val
-                    }]
+                    }],
+                    temperature: 0.5
                 })
             });
 
             const data = await res.json();
             const reply = data.choices[0].message.content;
             
-            // Verificăm dacă răspunsul conține blocuri de cod (```)
             if(reply.includes("```")) {
                 const codeMatch = reply.match(/```(?:lua|python|javascript)?([\s\S]*?)```/);
                 const pureCode = codeMatch ? codeMatch[1].trim() : reply;
@@ -80,7 +252,9 @@
 
         } catch (e) {
             loading.innerText = "Eroare! Verifică conexiunea sau cheia API.";
+            console.error(e);
         }
+        chat.scrollTop = chat.scrollHeight;
     }
 
     function addMsg(t, c) {
@@ -98,9 +272,11 @@
             const originalText = button.innerText;
             button.innerText = "Copied!";
             button.style.background = "#238636";
+            button.style.color = "white";
             setTimeout(() => {
                 button.innerText = originalText;
-                button.style.background = "#58a6ff";
+                button.style.background = "";
+                button.style.color = "";
             }, 2000);
         });
     }
