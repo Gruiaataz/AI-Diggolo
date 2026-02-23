@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diggolo-AI (Gemini Style)</title>
+    <title>Diggolo-AI Standard</title>
     <style>
         :root {
             --bg: #09090b;
@@ -13,330 +13,136 @@
             --text: #f4f4f5;
             --muted: #a1a1aa;
             --border: #27272a;
-            --user-bubble: #3b82f6;
-            --ai-bubble: #27272a; /* Culoare de fundal pentru mesajele AI */
         }
 
-        /* Teme Alternative (Exemple) */
-        body.theme-dark-blue {
-            --bg: #1a1b26;
-            --sidebar: #16161e;
-            --accent: #7aa2f7;
-            --card: #2f334d;
-            --text: #c0caf5;
-            --muted: #a9b1d6;
-            --border: #414868;
-            --user-bubble: #7aa2f7;
-            --ai-bubble: #2f334d;
-        }
-
-        body.theme-green-dark {
-            --bg: #101815;
-            --sidebar: #0d120f;
-            --accent: #9ece6a;
-            --card: #1e2621;
-            --text: #e0e6e0;
-            --muted: #b4c0b8;
-            --border: #35423b;
-            --user-bubble: #9ece6a;
-            --ai-bubble: #1e2621;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, sans-serif; }
-        body { background: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; position: relative; transition: background-color 0.5s ease; }
-
-        /* Background Animation */
-        .background-animation {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            pointer-events: none;
-            overflow: hidden;
-            z-index: -1;
-        }
-        .background-animation.dots::before {
-            content: '';
-            position: absolute;
-            inset: -200px;
-            background: 
-                radial-gradient(circle at 10% 10%, rgba(59,130,246,0.1) 1px, transparent 0),
-                radial-gradient(circle at 90% 90%, rgba(59,130,246,0.1) 1px, transparent 0);
-            background-size: 50px 50px;
-            animation: moveDots 30s infinite linear;
-        }
-        @keyframes moveDots {
-            from { background-position: 0 0; }
-            to { background-position: 500px 500px; }
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; }
 
         /* SIDEBAR */
         .sidebar { width: 280px; background: var(--sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 15px; z-index: 10; }
         .new-chat { background: var(--accent); color: white; border: none; padding: 12px; border-radius: 10px; cursor: pointer; font-weight: 600; margin-bottom: 15px; transition: 0.2s; }
-        .new-chat:hover { opacity: 0.9; transform: translateY(-1px); }
-
-        .search-container { margin-bottom: 20px; }
-        .search-container input { width: 100%; background: #18181b; border: 1px solid var(--border); padding: 10px; border-radius: 8px; color: white; outline: none; }
-
+        
         .chat-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; }
-        .chat-item { padding: 10px; border-radius: 8px; cursor: pointer; font-size: 14px; color: var(--muted); transition: 0.2s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .chat-item { padding: 12px; border-radius: 8px; cursor: pointer; font-size: 14px; color: var(--muted); transition: 0.2s; position: relative; }
         .chat-item:hover, .chat-item.active { background: var(--card); color: white; }
 
-        .sidebar-footer { border-top: 1px solid var(--border); padding-top: 15px; display: flex; flex-direction: column; gap: 10px; }
-        .buy-pro { background: linear-gradient(45deg, #4f46e5, #9333ea); border: none; padding: 10px; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; animation: glow 3s infinite; }
-        
+        /* CONTEXT MENU */
+        #contextMenu {
+            display: none; position: fixed; background: #212123; border: 1px solid var(--border);
+            border-radius: 8px; z-index: 1000; width: 180px; box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+        .menu-item { padding: 10px 15px; cursor: pointer; font-size: 13px; transition: 0.2s; }
+        .menu-item:hover { background: var(--accent); color: white; }
+        .menu-item.delete { color: #ff4d4d; }
+        .menu-item.delete:hover { background: #ff4d4d; color: white; }
+
         /* MAIN */
-        .main { flex: 1; display: flex; flex-direction: column; position: relative; }
-        .header { padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
-        .settings-btn { cursor: pointer; font-size: 20px; opacity: 0.7; transition: 0.3s; }
-        .settings-btn:hover { opacity: 1; transform: rotate(45deg); }
+        .main { flex: 1; display: flex; flex-direction: column; }
+        #chat-window { flex: 1; padding: 40px 15%; overflow-y: auto; display: flex; flex-direction: column; gap: 25px; }
+        .msg { max-width: 85%; padding: 15px 20px; border-radius: 15px; line-height: 1.6; animation: fadeIn 0.3s ease; }
+        .user { align-self: flex-end; background: var(--accent); color: white; border-bottom-right-radius: 2px; }
+        .ai { align-self: flex-start; background: var(--card); border: 1px solid var(--border); border-bottom-left-radius: 2px; }
 
-        #chat-window { flex: 1; padding: 40px 15%; overflow-y: auto; display: flex; flex-direction: column; gap: 30px; }
-        .msg { max-width: 85%; line-height: 1.6; animation: fadeIn 0.4s ease forwards; }
-        .user { align-self: flex-end; background: var(--user-bubble); color: white; border-bottom-right-radius: 2px; padding: 15px 20px; border-radius: 18px; }
-        .ai { align-self: flex-start; background: var(--ai-bubble); padding: 20px; border-radius: 18px; border: 1px solid var(--border); }
-
-        /* INPUT */
-        .input-area { padding: 20px 15% 40px; background: linear-gradient(transparent, var(--bg) 40%); position: sticky; bottom: 0; }
-        .input-box { background: #18181b; border: 1px solid var(--border); border-radius: 20px; display: flex; align-items: center; padding: 10px 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        input#userInput { flex: 1; background: transparent; border: none; color: white; font-size: 16px; outline: none; padding: 10px; }
-        .attach-btn { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 20px; margin-right: 10px; transition: 0.2s; }
-        .attach-btn:hover { color: var(--accent); }
+        .input-area { padding: 20px 15% 40px; }
+        .input-box { background: #18181b; border: 1px solid var(--border); border-radius: 15px; display: flex; padding: 10px 15px; }
+        input { flex: 1; background: transparent; border: none; color: white; font-size: 16px; outline: none; padding: 10px; }
         #sendBtn { color: var(--accent); cursor: pointer; font-weight: bold; padding: 10px; }
-        
-        /* Image Preview */
-        .image-preview { display: flex; align-items: center; background: var(--card); padding: 8px; border-radius: 10px; margin-top: 10px; border: 1px solid var(--border); }
-        .image-preview img { max-width: 100px; max-height: 100px; border-radius: 8px; margin-right: 10px; }
-        .remove-image { background: red; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 12px; }
-
-        /* SETTINGS MODAL */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 100; align-items: center; justify-content: center; }
-        .modal-content { background: var(--sidebar); padding: 30px; border-radius: 20px; border: 1px solid var(--border); width: 450px; max-height: 90vh; overflow-y: auto; }
-        .modal-content h3 { margin-bottom: 20px; color: var(--accent); }
-        .setting-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .setting-row label { flex: 1; margin-right: 15px; color: var(--text); }
-        .setting-row select, .setting-row input[type="text"] { flex: 2; background: #111; border: 1px solid #333; color: white; padding: 8px; border-radius: 6px; }
-        .setting-row input[type="checkbox"] { transform: scale(1.2); }
-        .close-modal { background: var(--accent); border: none; padding: 10px 20px; border-radius: 8px; color: white; cursor: pointer; margin-top: 20px; width: 100%; font-weight: 600; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes glow { 0%, 100% { box-shadow: 0 0 5px rgba(147, 51, 234, 0.3); } 50% { box-shadow: 0 0 20px rgba(147, 51, 234, 0.6); } }
-        
-        pre { background: #000; padding: 15px; border-radius: 10px; overflow-x: auto; margin: 10px 0; border: 1px solid #333; position: relative; }
-        .copy { position: absolute; top: 5px; right: 5px; font-size: 10px; background: #333; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; }
+
+        /* PRINT / PDF STYLES */
+        @media print {
+            .sidebar, .input-area, .header, #contextMenu { display: none !important; }
+            body { background: white; color: black; }
+            #chat-window { padding: 0; display: block; }
+            .msg { border: 1px solid #ccc; margin-bottom: 10px; color: black !important; background: transparent !important; }
+        }
     </style>
 </head>
-<body class="theme-default">
-    <div class="background-animation"></div>
+<body>
+
+    <div id="contextMenu">
+        <div class="menu-item" onclick="downloadPDF()">📄 Distribuie (PDF)</div>
+        <div class="menu-item delete" onclick="deleteCurrentChat()">🗑️ Șterge Conversația</div>
+    </div>
 
     <div class="sidebar">
         <button class="new-chat" onclick="createNewChat()">+ Chat Nou</button>
-        <div class="search-container">
-            <input type="text" id="search" placeholder="Caută în conversatii..." oninput="filterChats()">
-        </div>
         <div class="chat-list" id="chatList"></div>
-        <div class="sidebar-footer">
-            <button class="buy-pro">💎 Buy Diggolo Pro</button>
-            <p style="font-size: 11px; color: var(--muted); text-align: center;">Versiune: Standard 3.0</p>
-        </div>
     </div>
 
     <div class="main">
-        <div class="header">
-            <h2>Diggolo-AI</h2>
-            <div class="settings-btn" onclick="toggleModal()">⚙️</div>
-        </div>
         <div id="chat-window"></div>
         <div class="input-area">
-            <div id="imagePreviewContainer" style="display: none;" class="image-preview">
-                <img id="imagePreview" src="" alt="Selected Image">
-                <span id="imageFileName" style="font-size: 14px; color: var(--muted); flex-grow: 1;"></span>
-                <button class="remove-image" onclick="removeImage()">X</button>
-            </div>
             <div class="input-box">
-                <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="previewImage(event)">
-                <button class="attach-btn" onclick="document.getElementById('imageInput').click()">📎</button>
-                <input type="text" id="userInput" placeholder="Întreabă orice...">
+                <input type="text" id="userInput" placeholder="Scrie un mesaj...">
                 <div id="sendBtn">TRIMITE</div>
             </div>
         </div>
     </div>
 
-    <div class="modal" id="settingsModal">
-        <div class="modal-content">
-            <h3>Setări Diggolo-AI</h3>
-            <div class="setting-row">
-                <label for="userName">Nume Utilizator:</label>
-                <input type="text" id="userName" placeholder="Numele tău">
-            </div>
-            <div class="setting-row">
-                <label for="themeSelect">Temă Vizuală:</label>
-                <select id="themeSelect" onchange="applyTheme(this.value)">
-                    <option value="theme-default">Implicit (Dark)</option>
-                    <option value="theme-dark-blue">Albastru Închis</option>
-                    <option value="theme-green-dark">Verde Închis</option>
-                </select>
-            </div>
-            <div class="setting-row">
-                <label for="bgAnimation">Animație Fundal:</label>
-                <input type="checkbox" id="bgAnimation" onchange="toggleBackgroundAnimation(this.checked)">
-            </div>
-            <button class="close-modal" onclick="saveSettings()">Salvează și Închide</button>
-        </div>
-    </div>
-
 <script>
-    const API_KEY = "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"; // Groq API Key
-    let chats = JSON.parse(localStorage.getItem('diggolo_chats')) || [];
+    const API_KEY = "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";
+    let chats = JSON.parse(localStorage.getItem('diggolo_v4')) || [];
     let currentChatId = null;
-    let attachedImageBase64 = null; // Pentru a stoca imaginea atașată
+    let menuTargetId = null;
 
-    // Inițializare și încărcare setări/chaturi
     function init() {
-        const savedName = localStorage.getItem('user_name') || "";
-        document.getElementById('userName').value = savedName;
-
-        const savedTheme = localStorage.getItem('app_theme') || 'theme-default';
-        applyTheme(savedTheme);
-        document.getElementById('themeSelect').value = savedTheme;
-
-        const savedAnimation = localStorage.getItem('bg_animation') === 'true';
-        toggleBackgroundAnimation(savedAnimation);
-        document.getElementById('bgAnimation').checked = savedAnimation;
-
         renderChatList();
         if(chats.length > 0) loadChat(chats[0].id);
         else createNewChat();
     }
 
-    // Funcții pentru gestionarea chaturilor
     function createNewChat() {
         const id = Date.now();
-        const newChat = { 
-            id, 
-            title: "Chat Nou", 
-            messages: [{ role: "system", content: "Ești Diggolo AI, un AI de chat multimodal. Autor: Gruia (gruiaa69). Reține contextul și explică ce faci pas cu pas. Dacă primești o imagine, încearcă să o descrii sau să răspunzi în funcție de conținutul ei." }] 
-        };
-        chats.unshift(newChat);
-        saveAndRender();
+        chats.unshift({ id, title: "Chat Nou", messages: [{ role: "system", content: "Ești Diggolo AI. Autor: Gruia (gruiaa69)." }] });
+        save();
         loadChat(id);
     }
 
     function loadChat(id) {
         currentChatId = id;
         const chat = chats.find(c => c.id === id);
-        const window = document.getElementById('chat-window');
-        window.innerHTML = '';
-        
-        chat.messages.forEach(m => {
-            if(m.role !== 'system') {
-                if (typeof m.content === 'string') {
-                    addMessageToUI(m.content, m.role === 'user' ? 'user' : 'ai');
-                } else if (Array.isArray(m.content)) { // Mesaj multimodal
-                    let textContent = '';
-                    let imageUrl = '';
-                    m.content.forEach(part => {
-                        if (part.type === 'text') textContent = part.text;
-                        if (part.type === 'image_url') imageUrl = part.image_url.url;
-                    });
-                    addMessageToUI(textContent, m.role === 'user' ? 'user' : 'ai', imageUrl);
-                }
-            }
-        });
+        const win = document.getElementById('chat-window');
+        win.innerHTML = '';
+        chat.messages.forEach(m => { if(m.role !== 'system') addMsgUI(m.content, m.role); });
         renderChatList();
-        removeImage(); // Curăță orice imagine atașată la schimbarea chatului
     }
 
-    // Trimite mesaj către AI
     async function sendMessage() {
         const input = document.getElementById('userInput');
         const text = input.value.trim();
-        if(!text && !attachedImageBase64) return; // Nu trimite dacă nu e text și nicio imagine
+        if(!text) return;
 
-        // Construiește mesajul pentru AI (text sau multimodal)
-        let userMessageContent = [];
-        if (text) userMessageContent.push({ type: "text", text: text });
-        if (attachedImageBase64) userMessageContent.push({ type: "image_url", image_url: { url: attachedImageBase64 } });
-
-        addMessageToUI(text, 'user', attachedImageBase64); // Adaugă mesajul utilizatorului în UI
+        addMsgUI(text, 'user');
         input.value = '';
-        removeImage(); // Curăță imaginea după trimitere
-
-        const loading = addMessageToUI("Se Incarca Mesaj-ul...", 'ai');
+        const loading = addMsgUI("Se Incarca Mesaj-ul...", 'ai');
 
         const chat = chats.find(c => c.id === currentChatId);
-        chat.messages.push({ role: "user", content: userMessageContent });
-        if(chat.title === "Chat Nou") chat.title = text.substring(0, 20); // Titlu bazat pe primul mesaj
+        chat.messages.push({ role: "user", content: text });
+        if(chat.title === "Chat Nou") chat.title = text.substring(0, 25);
 
         try {
-            // Aici ar trebui să folosești un model capabil de imagini (ex: Gemini Pro Vision API)
-            // Pentru demonstrație, vom trimite doar textul către Groq dacă nu e imagine
-            // Dacă e imagine, AI-ul va primi doar un mesaj text că ai trimis o imagine, fără să o "vadă" real
-
-            let apiMessages = chat.messages.map(m => {
-                if (Array.isArray(m.content)) {
-                    // Dacă e multimodal, transformă în text pentru Groq
-                    const textPart = m.content.find(p => p.type === 'text');
-                    const imagePart = m.content.find(p => p.type === 'image_url');
-                    let newContent = textPart ? textPart.text : '';
-                    if (imagePart) newContent += ' [Imagine atașată]';
-                    return { role: m.role, content: newContent };
-                }
-                return m;
-            });
-
-            // Adaugă instrucțiuni suplimentare pentru sistem dacă e o imagine
-            if (attachedImageBase64) {
-                 apiMessages[0].content += " Utilizatorul a atașat o imagine. Răspunde ca și cum ai fi văzut-o, descriind-o sau comentând pe baza ei (chiar dacă nu ai acces real la ea în acest moment, prefă-te).";
-            }
-
-
             const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                 method: "POST",
                 headers: { "Authorization": `Bearer ${API_KEY}`, "Content-Type": "application/json" },
-                body: JSON.stringify({ model: "llama-3.3-70b-versatile", messages: apiMessages }) // Trimitem istoricul complet
+                body: JSON.stringify({ model: "llama-3.3-70b-versatile", messages: chat.messages })
             });
             const data = await res.json();
             const reply = data.choices[0].message.content;
-            
             chat.messages.push({ role: "assistant", content: reply });
-            formatAIResponse(loading, reply); // Formatează răspunsul AI în UI
-            saveAndRender(); // Salvează și randează lista de chaturi
-        } catch (e) { 
-            loading.innerText = "Eroare la trimitere mesaj. Verifică cheia API sau conexiunea."; 
-            console.error("API Error:", e);
-        }
+            loading.innerText = reply;
+            save();
+        } catch (e) { loading.innerText = "Eroare API."; }
     }
 
-    // Adaugă mesaj în interfață (cu suport pentru imagini)
-    function addMessageToUI(text, type, imageUrl = null) {
+    function addMsgUI(text, role) {
         const div = document.createElement('div');
-        div.className = `msg ${type}`;
-        
-        if (imageUrl && type === 'user') { // Afișează imaginea doar pentru user
-            const img = document.createElement('img');
-            img.src = imageUrl;
-            img.style.maxWidth = '200px';
-            img.style.maxHeight = '200px';
-            img.style.borderRadius = '8px';
-            img.style.marginBottom = '10px';
-            div.appendChild(img);
-            div.appendChild(document.createElement('br'));
-        }
-        
-        const textNode = document.createTextNode(text);
-        div.appendChild(textNode);
-
+        div.className = `msg ${role === 'user' ? 'user' : 'ai'}`;
+        div.innerText = text;
         document.getElementById('chat-window').appendChild(div);
         document.getElementById('chat-window').scrollTop = document.getElementById('chat-window').scrollHeight;
         return div;
-    }
-
-    // Funcții de salvare și randare UI
-    function saveAndRender() {
-        localStorage.setItem('diggolo_chats', JSON.stringify(chats));
-        renderChatList();
     }
 
     function renderChatList() {
@@ -346,90 +152,42 @@
             const item = document.createElement('div');
             item.className = `chat-item ${c.id === currentChatId ? 'active' : ''}`;
             item.innerText = c.title;
+            item.oncontextmenu = (e) => showMenu(e, c.id);
             item.onclick = () => loadChat(c.id);
             list.appendChild(item);
         });
     }
 
-    function filterChats() {
-        const term = document.getElementById('search').value.toLowerCase();
-        document.querySelectorAll('.chat-item').forEach(item => {
-            item.style.display = item.innerText.toLowerCase().includes(term) ? 'block' : 'none';
-        });
+    // CONTEXT MENU LOGIC
+    function showMenu(e, id) {
+        e.preventDefault();
+        menuTargetId = id;
+        const menu = document.getElementById('contextMenu');
+        menu.style.display = 'block';
+        menu.style.left = `${e.pageX}px`;
+        menu.style.top = `${e.pageY}px`;
     }
 
-    // Funcții de setări
-    function toggleModal() { document.getElementById('settingsModal').style.display = 'flex'; }
-    function saveSettings() {
-        localStorage.setItem('user_name', document.getElementById('userName').value);
-        localStorage.setItem('app_theme', document.getElementById('themeSelect').value);
-        localStorage.setItem('bg_animation', document.getElementById('bgAnimation').checked);
-        applyTheme(document.getElementById('themeSelect').value);
-        toggleBackgroundAnimation(document.getElementById('bgAnimation').checked);
-        document.getElementById('settingsModal').style.display = 'none';
+    window.onclick = () => document.getElementById('contextMenu').style.display = 'none';
+
+    function deleteCurrentChat() {
+        chats = chats.filter(c => c.id !== menuTargetId);
+        save();
+        if(chats.length > 0) loadChat(chats[0].id);
+        else createNewChat();
     }
 
-    function applyTheme(themeName) {
-        document.body.className = themeName;
+    function downloadPDF() {
+        // Redirijează către funcția de print a browserului care permite Save as PDF
+        window.print();
     }
 
-    function toggleBackgroundAnimation(isEnabled) {
-        const animationDiv = document.querySelector('.background-animation');
-        if (isEnabled) {
-            animationDiv.classList.add('dots');
-        } else {
-            animationDiv.classList.remove('dots');
-        }
-    }
+    function save() { localStorage.setItem('diggolo_v4', JSON.stringify(chats)); renderChatList(); }
 
-    // Funcții pentru încărcare imagine
-    function previewImage(event) {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                attachedImageBase64 = e.target.result;
-                document.getElementById('imagePreview').src = attachedImageBase64;
-                document.getElementById('imageFileName').innerText = file.name;
-                document.getElementById('imagePreviewContainer').style.display = 'flex';
-            };
-            reader.readAsDataURL(file);
-        }
-    }
+    document.getElementById('sendBtn').onclick = sendMessage;
+    document.getElementById('userInput').onkeydown = (e) => e.key === 'Enter' && sendMessage();
 
-    function removeImage() {
-        attachedImageBase64 = null;
-        document.getElementById('imageInput').value = ''; // Resetează input-ul de fișier
-        document.getElementById('imagePreviewContainer').style.display = 'none';
-        document.getElementById('imagePreview').src = '';
-        document.getElementById('imageFileName').innerText = '';
-    }
-
-    // Funcții de formatare răspuns AI
-    function formatAIResponse(el, text) {
-        let formattedHtml = '';
-        const parts = text.split(/```/); // Split la fiecare bloc de cod
-        
-        parts.forEach((part, index) => {
-            if (index % 2 === 1) { // Este un bloc de cod
-                const codeContent = part.replace(/^[a-z]+\n/i, "").trim(); // Scoate limbajul (lua, python, etc.)
-                formattedHtml += `<pre><code>${codeContent}</code><button class="copy" onclick="navigator.clipboard.writeText(this.previousElementSibling.innerText)">Copy</button></pre>`;
-            } else { // Este text normal
-                if (part.trim()) {
-                    formattedHtml += `<p>${part.trim().replace(/\n/g, "<br>")}</p>`;
-                }
-            }
-        });
-        el.innerHTML = formattedHtml;
-        document.getElementById('chat-window').scrollTop = document.getElementById('chat-window').scrollHeight;
-    }
-
-    document.getElementById('sendBtn').addEventListener('click', sendMessage);
-    document.getElementById('userInput').addEventListener('keypress', (e) => {
-        if(e.key === 'Enter') sendMessage();
-    });
-
-    init(); // Inițializează aplicația la încărcare
+    init();
 </script>
 </body>
 </html>
