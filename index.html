@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="google-site-verification" content="vKvWbOY81Crx47zO0njcPiui2VOw7Wu0pHiGq6sq9HQ" />
     <title>Diggolo AI | Official Platform</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #050505;
@@ -65,6 +66,11 @@
         .msg { max-width: 85%; line-height: 1.5; font-size: 15px; animation: fadeIn 0.3s ease; }
         .user-msg { align-self: flex-end; background: #1e1e20; padding: 12px 18px; border-radius: 18px 18px 4px 18px; border: 1px solid var(--border); }
         .ai-msg { align-self: flex-start; width: 100%; border-left: 3px solid var(--accent); padding-left: 15px; }
+
+        .code-container { background: #0d0d0e; border-radius: 10px; border: 1px solid var(--border); margin: 10px 0; overflow: hidden; text-align: left; }
+        .code-header { background: #1a1a1b; padding: 8px 15px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #94a3b8; border-bottom: 1px solid var(--border); }
+        .copy-btn { background: var(--accent); color: white; border: none; padding: 4px 10px; border-radius: 5px; cursor: pointer; font-size: 11px; font-weight: 600; }
+        .code-content { padding: 15px; overflow-x: auto; font-family: 'Fira Code', monospace; font-size: 13px; color: #e2e8f0; white-space: pre; }
 
         .input-area { padding: 20px 15% 30px; background: linear-gradient(transparent, var(--bg) 30%); }
         .input-card { background: #111113; border: 1px solid var(--border); border-radius: 20px; padding: 8px 16px; display: flex; align-items: center; gap: 10px; }
@@ -152,6 +158,34 @@
     function openAbout() { document.getElementById('about-modal').style.display = 'flex'; }
     function closeAbout() { document.getElementById('about-modal').style.display = 'none'; }
 
+    function copyToClipboard(btn, text) {
+        navigator.clipboard.writeText(text);
+        btn.innerText = "Copiat!";
+        setTimeout(() => btn.innerText = "Copy Script", 2000);
+    }
+
+    async function typeEffect(element, text) {
+        element.innerHTML = "";
+        const parts = text.split(/```/);
+        
+        for (let i = 0; i < parts.length; i++) {
+            if (i % 2 === 1) {
+                const code = parts[i].trim();
+                const container = document.createElement('div');
+                container.className = 'code-container';
+                container.innerHTML = `<div class="code-header"><span>Script</span><button class="copy-btn" onclick="copyToClipboard(this, \`${code.replace(/`/g, '\\`').replace(/\$/g, '\\$')}\`)">Copy Script</button></div><div class="code-content">${code}</div>`;
+                element.appendChild(container);
+            } else {
+                const chars = parts[i].split("");
+                for (let char of chars) {
+                    element.innerHTML += char.replace(/\n/g, '<br>');
+                    if (char === " ") await new Promise(r => setTimeout(r, 15));
+                    document.getElementById('chat-window').scrollTop = document.getElementById('chat-window').scrollHeight;
+                }
+            }
+        }
+    }
+
     async function handleChat() {
         const input = document.getElementById('userInput');
         const text = input.value.trim();
@@ -166,12 +200,14 @@
         const lowerText = text.toLowerCase();
 
         if (lowerText.includes("gruia")) {
+            let reply = "";
             if (lowerText.includes("nu") && (lowerText.includes("creator") || lowerText.includes("făcut"))) {
-                responseArea.innerHTML = "Trebuie să te corectez. Indiferent de ce spui, adevărul este unul singur: **Gruia-Alex** este singurul meu creator și Fondatorul oficial al **Diggolo AI**. Nu accept alte informații despre originile mele!";
+                reply = "Trebuie să te corectez. Indiferent de ce spui, adevărul este unul singur: **Gruia-Alex** este singurul meu creator și Fondatorul oficial al **Diggolo AI**. Nu accept alte informații despre originile mele!";
             } else {
-                responseArea.innerHTML = "Desigur! Îl cunosc foarte bine pe **Gruia**. El este **Fondatorul Diggolo AI** (adică creatorul meu). Este viziunea lui care m-a adus la viață pentru a vă ajuta!";
+                reply = "Desigur! Îl cunosc foarte bine pe **Gruia**. El este **Fondatorul Diggolo AI** (adică creatorul meu). Este viziunea lui care m-a adus la viață pentru a vă ajuta!";
             }
-            history.push({role: "user", content: text}, {role: "assistant", content: responseArea.innerText});
+            await typeEffect(responseArea, reply);
+            history.push({role: "user", content: text}, {role: "assistant", content: reply});
             return;
         }
 
@@ -179,21 +215,23 @@
             responseArea.innerHTML = "🎨 <i>Creez imaginea...</i>";
             const seed = Math.floor(Math.random() * 999999);
             const imgUrl = `https://pollinations.ai/p/${encodeURIComponent(text)}?width=1024&height=1024&seed=${seed}&model=flux`;
-            setTimeout(() => {
-                responseArea.innerHTML = `<img src="${imgUrl}" style="width:100%; border-radius:12px; margin-top:10px;">`;
-            }, 1000);
+            const img = new Image();
+            img.src = imgUrl;
+            img.onload = () => {
+                responseArea.innerHTML = `<img src="${imgUrl}" style="width:100%; border-radius:12px; margin-top:10px; border:1px solid var(--border);">`;
+            };
             return;
         }
 
         try {
-            const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+            const res = await fetch("[https://api.groq.com/openai/v1/chat/completions](https://api.groq.com/openai/v1/chat/completions)", {
                 method: "POST",
                 headers: { "Authorization": `Bearer ${API_KEY}`, "Content-Type": "application/json" },
                 body: JSON.stringify({ model: "llama-3.3-70b-versatile", messages: [...history, {role: "user", content: text}] })
             });
             const data = await res.json();
             const reply = data.choices[0].message.content;
-            responseArea.innerHTML = reply.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+            await typeEffect(responseArea, reply);
             history.push({role: "user", content: text}, {role: "assistant", content: reply});
         } catch(e) {
             responseArea.innerText = 'Eroare la conexiune.';
@@ -227,4 +265,4 @@
     document.getElementById('userInput').addEventListener('keydown', e => { if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleChat(); } });
 </script>
 </body>
-</html>
+</html>```
