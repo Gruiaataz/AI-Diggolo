@@ -3,93 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Diggolo AI | Ultimate Pro v3</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <title>Diggolo AI | Thinking Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #030303;
-            --accent: #6366f1;
+            --bg: #09090b;
+            --accent: #3b82f6;
             --gemini-grad: linear-gradient(90deg, #4285f4, #9b72cb, #d96570);
-            --glass: rgba(20, 20, 25, 0.8);
+            --glass: rgba(18, 18, 20, 0.9);
             --border: rgba(255, 255, 255, 0.1);
-            --text: #ffffff;
+            --text: #f4f4f5;
+            --thought-bg: rgba(255, 255, 255, 0.03);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
         body { background: var(--bg); color: var(--text); height: 100vh; display: flex; overflow: hidden; }
 
-        .nebula {
-            position: fixed; width: 100vw; height: 100vh;
-            background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(99, 102, 241, 0.15) 0%, transparent 50%);
-            z-index: -1; transition: 0.1s linear;
-        }
-
+        /* Sidebar */
         .sidebar {
-            width: 280px; background: var(--glass); backdrop-filter: blur(30px);
+            width: 280px; background: var(--glass); backdrop-filter: blur(20px);
             border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 25px;
-            transition: transform 0.3s ease;
         }
 
-        .logo { font-size: 20px; font-weight: 800; background: var(--gemini-grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 30px; }
+        .logo { font-size: 22px; font-weight: 800; background: var(--gemini-grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 40px; }
 
-        .btn-new {
-            background: var(--gemini-grad); border: none; color: white; padding: 14px;
-            border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-bottom: 20px;
-        }
-
+        /* Chat Area */
         #chat-window { flex: 1; overflow-y: auto; padding: 40px 15%; display: flex; flex-direction: column; gap: 30px; scroll-behavior: smooth; }
 
-        .msg { max-width: 85%; line-height: 1.6; animation: slideUp 0.4s ease forwards; position: relative; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .msg { max-width: 90%; animation: slideUp 0.4s ease forwards; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-        .user-msg { align-self: flex-end; background: #1f1f23; padding: 15px 22px; border-radius: 24px 24px 4px 24px; border: 1px solid var(--border); }
-        .ai-msg { align-self: flex-start; width: 100%; border-left: 3px solid var(--accent); padding-left: 20px; }
+        .user-msg { align-self: flex-end; background: #27272a; padding: 12px 20px; border-radius: 18px 18px 4px 18px; border: 1px solid var(--border); font-size: 15px; }
+        .ai-msg { align-self: flex-start; width: 100%; position: relative; }
 
-        .ai-image { max-width: 100%; border-radius: 15px; margin: 15px 0; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-
-        .input-area { padding: 20px 15% 40px; }
-        .input-box {
-            background: rgba(40, 40, 45, 0.8); border: 1px solid var(--border); border-radius: 30px;
-            padding: 10px 25px; display: flex; align-items: flex-end; gap: 15px; backdrop-filter: blur(20px);
+        /* Thinking Block */
+        .thought-container {
+            margin-bottom: 10px;
+            border-left: 2px solid #444;
+            padding-left: 15px;
+            font-size: 13px;
+            color: #888;
+        }
+        
+        .thought-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            user-select: none;
+            font-weight: 500;
+            padding: 5px 0;
         }
 
-        textarea { flex: 1; background: transparent; border: none; color: white; font-size: 16px; padding: 12px 0; outline: none; resize: none; max-height: 150px; }
-        .send-btn { background: white; color: black; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: bold; font-size: 20px; }
+        .thought-content {
+            background: var(--thought-bg);
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 5px;
+            font-style: italic;
+            display: none; /* Ascuns initial */
+        }
 
-        pre { background: #000; padding: 20px; border-radius: 12px; font-family: 'Fira Code', monospace; font-size: 13px; overflow-x: auto; border: 1px solid var(--border); color: #82aaff; margin: 10px 0; }
+        .ai-response { font-size: 16px; line-height: 1.6; }
 
-        .loader { display: flex; gap: 5px; padding: 10px; }
-        .dot { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; animation: pulse 1.5s infinite; }
+        /* Input Zone */
+        .input-area { padding: 20px 15% 40px; background: linear-gradient(transparent, var(--bg) 50%); }
+        .input-box {
+            background: #18181b; border: 1px solid var(--border); border-radius: 24px;
+            padding: 10px 20px; display: flex; align-items: flex-end; gap: 15px;
+        }
 
-        @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+        textarea { flex: 1; background: transparent; border: none; color: white; font-size: 16px; padding: 10px 0; outline: none; resize: none; max-height: 150px; }
+        .send-btn { background: white; color: black; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: bold; }
+
+        /* Code & Images */
+        pre { background: #000; padding: 15px; border-radius: 10px; font-family: 'Fira Code', monospace; font-size: 13px; overflow-x: auto; color: #a1a1aa; margin: 10px 0; border: 1px solid var(--border); }
+        .ai-image { max-width: 100%; border-radius: 12px; margin-top: 15px; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
 
         @media (max-width: 768px) { #chat-window { padding: 20px 5%; } .input-area { padding: 10px 5% 20px; } .sidebar { display: none; } }
     </style>
 </head>
 <body>
 
-<div class="nebula" id="nebula"></div>
-
 <aside class="sidebar">
-    <div class="logo">DIGGOLO PRO</div>
-    <button class="btn-new" onclick="window.location.reload()">+ Chat Nou</button>
-    <div style="flex:1"></div>
-    <div style="font-size: 11px; color: #666; text-align: center;">V3.5 | Gruia Edition</div>
+    <div class="logo">DIGGOLO AI</div>
+    <div style="font-size: 12px; color: #555; margin-bottom: 20px;">MODEL: o1-Style Thinking</div>
+    <button style="background:#27272a; color:white; border:none; padding:12px; border-radius:10px; cursor:pointer;" onclick="location.reload()">+ Sesiune Nouă</button>
 </aside>
 
 <main style="flex:1; display:flex; flex-direction:column;">
     <div id="chat-window"></div>
 
     <div class="input-area">
-        <div id="preview-container" style="display:none; margin-bottom:10px;">
-            <img id="img-pre" style="height:60px; border-radius:8px; border:2px solid var(--accent);">
-            <button onclick="removeImg()" style="background:red; color:white; border:none; border-radius:50%; width:20px; height:20px; cursor:pointer; position:relative; top:-50px; left:-10px;">✕</button>
-        </div>
         <div class="input-box">
-            <label style="cursor:pointer; font-size:22px;">
-                📷<input type="file" id="fileIn" hidden onchange="handleFile(this)">
-            </label>
-            <textarea id="userInput" placeholder="Mesaj sau 'Generează o poză cu...'" rows="1"></textarea>
+            <textarea id="userInput" placeholder="Întreabă-mă ceva..." rows="1" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"></textarea>
             <div class="send-btn" onclick="handleSend()">↑</div>
         </div>
     </div>
@@ -97,102 +104,103 @@
 
 <script>
     const API_KEY = "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";
-    let history = [{ role: "system", content: "Ești Diggolo AI de Gruia. Răspunde prietenos. Dacă nu ți se cere cod, nu da cod. Pentru imagini, confirmă doar." }];
-    let base64Img = null;
-
-    // Nebula Effect
-    document.addEventListener('mousemove', e => {
-        document.getElementById('nebula').style.setProperty('--x', e.clientX + 'px');
-        document.getElementById('nebula').style.setProperty('--y', e.clientY + 'px');
-    });
-
-    function handleFile(input) {
-        const file = input.files[0];
-        const reader = new FileReader();
-        reader.onload = e => {
-            base64Img = e.target.result;
-            document.getElementById('img-pre').src = base64Img;
-            document.getElementById('preview-container').style.display = 'block';
-        };
-        reader.readAsDataURL(file);
-    }
-
-    function removeImg() {
-        base64Img = null;
-        document.getElementById('preview-container').style.display = 'none';
-        document.getElementById('fileIn').value = '';
-    }
+    let history = [];
 
     async function handleSend() {
         const input = document.getElementById('userInput');
         const text = input.value.trim();
-        if (!text && !base64Img) return;
+        if (!text) return;
 
-        addMsg(text, 'user', base64Img);
+        addMsg(text, 'user');
         input.value = ''; input.style.height = 'auto';
 
-        // DETECTARE GENERARE IMAGINE
-        const genKeywords = ["generează", "fă o poză", "fă-mi o poză", "imagine cu", "generate"];
-        if (genKeywords.some(k => text.toLowerCase().includes(k))) {
-            const loading = addMsg("🎨 Creez imaginea...", 'ai');
-            try {
+        // Creăm elementul AI cu zona de gândire
+        const aiMsgDiv = createAIPlaceholder();
+        const thoughtContent = aiMsgDiv.querySelector('.thought-content');
+        const responseArea = aiMsgDiv.querySelector('.ai-response');
+
+        // PAS 1: Simulăm "Gândirea" (Analiză intenție)
+        thoughtContent.innerText = "Analizez contextul întrebării... Verific datele disponibile... Pregătesc un răspuns concis.";
+        
+        // Logica Generare Imagine
+        if (text.toLowerCase().includes("generează") || text.toLowerCase().includes("imagine")) {
+            thoughtContent.innerText = "Accesare motor de randare grafică... Generare prompt artistic... Finalizare imagine.";
+            setTimeout(() => {
                 const seed = Math.floor(Math.random() * 999999);
                 const imgUrl = `https://pollinations.ai/p/${encodeURIComponent(text)}?width=1024&height=1024&seed=${seed}&model=flux`;
-                loading.innerHTML = `Iată ce am creat:<br><img src="${imgUrl}" class="ai-image">`;
-            } catch (err) { loading.innerText = "Eroare la generare."; }
-            removeImg();
+                responseArea.innerHTML = `Am generat imaginea bazată pe descrierea ta:<br><img src="${imgUrl}" class="ai-image">`;
+            }, 1500);
             return;
         }
 
-        // CHAT NORMAL / VISION
-        const loading = addMsg('<div class="loader"><div class="dot"></div><div class="dot" style="animation-delay:0.2s"></div><div class="dot" style="animation-delay:0.4s"></div></div>', 'ai');
-        
-        let userContent = [{ type: "text", text: text || "Analizează imaginea." }];
-        if (base64Img) userContent.push({ type: "image_url", image_url: { url: base64Img } });
-
-        history.push({ role: "user", content: userContent });
-        const model = base64Img ? "llama-3.2-11b-vision-preview" : "llama-3.3-70b-versatile";
-        removeImg();
-
+        // PAS 2: Apel API pentru Text
         try {
             const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                 method: "POST",
                 headers: { "Authorization": `Bearer ${API_KEY}`, "Content-Type": "application/json" },
-                body: JSON.stringify({ model: model, messages: history, temperature: 0.7 })
+                body: JSON.stringify({
+                    model: "llama-3.3-70b-versatile",
+                    messages: [...history, { role: "user", content: text }]
+                })
             });
 
             const data = await res.json();
             const reply = data.choices[0].message.content;
-            loading.remove();
-            addMsg(reply, 'ai');
-            history.push({ role: "assistant", content: reply });
+
+            // Afișăm răspunsul
+            responseArea.innerHTML = formatAIResponse(reply);
+            history.push({ role: "user", content: text }, { role: "assistant", content: reply });
         } catch (e) {
-            loading.innerText = "Eroare la procesare. Mai încearcă o dată.";
+            responseArea.innerText = "Eroare de conexiune. Te rog să reîncerci.";
         }
     }
 
-    function addMsg(txt, role, img = null) {
+    function createAIPlaceholder() {
         const win = document.getElementById('chat-window');
         const div = document.createElement('div');
-        div.className = `msg ${role}-msg`;
-
-        if (img && role === 'user') {
-            div.innerHTML = `<img src="${img}" style="max-width:200px; border-radius:10px; margin-bottom:10px;"><br>${txt}`;
-        } else if (txt.includes("```")) {
-            const parts = txt.split("```");
-            div.innerHTML = parts[0] + `<pre><code>/* Diggolo AI Script */\n\n${parts[1].trim()}</code></pre>` + (parts[2] || "");
-        } else {
-            div.innerHTML = txt.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
-        }
-
+        div.className = "msg ai-msg";
+        div.innerHTML = `
+            <div class="thought-container">
+                <div class="thought-header" onclick="toggleThought(this)">
+                    <span class="icon">▼</span> <span>Gândire (Thinking Process)</span>
+                </div>
+                <div class="thought-content" style="display: block;">Se inițializează analiza...</div>
+            </div>
+            <div class="ai-response">...</div>
+        `;
         win.appendChild(div);
         win.scrollTop = win.scrollHeight;
         return div;
     }
 
-    document.getElementById('userInput').addEventListener('keydown', e => {
-        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); }
-    });
+    function toggleThought(header) {
+        const content = header.nextElementSibling;
+        const icon = header.querySelector('.icon');
+        if (content.style.display === "none") {
+            content.style.display = "block";
+            icon.innerText = "▼";
+        } else {
+            content.style.display = "none";
+            icon.innerText = "▶";
+        }
+    }
+
+    function addMsg(txt, role) {
+        const win = document.getElementById('chat-window');
+        const div = document.createElement('div');
+        div.className = `msg ${role}-msg`;
+        div.innerText = txt;
+        win.appendChild(div);
+        win.scrollTop = win.scrollHeight;
+    }
+
+    function formatAIResponse(txt) {
+        if (txt.includes("```")) {
+            const parts = txt.split("```");
+            return parts[0] + `<pre><code>/* Diggolo AI Script */\n\n${parts[1].trim()}</code></pre>` + (parts[2] || "");
+        }
+        return txt.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
+    }
 </script>
 </body>
 </html>
