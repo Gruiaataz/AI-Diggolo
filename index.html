@@ -1,0 +1,143 @@
+<script>
+let history = [];
+
+function openAbout() {
+    document.getElementById('about-modal').style.display = 'flex';
+}
+
+function closeAbout() {
+    document.getElementById('about-modal').style.display = 'none';
+}
+
+async function typeEffect(element, text) {
+    element.innerHTML = "";
+    const parts = text.split(/```/);
+
+    for (let i = 0; i < parts.length; i++) {
+
+        if (i % 2 === 1) {
+            const code = parts[i].trim();
+            const container = document.createElement('div');
+            container.className = 'code-container';
+            container.innerHTML = `
+                <div class="code-header">
+                    <span>Script</span>
+                    <button class="copy-btn" onclick="copyThis(this)">Copy Script</button>
+                </div>
+                <div class="code-content">${code}</div>
+            `;
+            element.appendChild(container);
+
+        } else {
+            const words = parts[i].split(" ");
+            for (let word of words) {
+                element.innerHTML += word + " ";
+                await new Promise(r => setTimeout(r, 20));
+                document.getElementById('chat-window').scrollTop =
+                    document.getElementById('chat-window').scrollHeight;
+            }
+        }
+    }
+}
+
+function copyThis(btn) {
+    const code = btn.parentElement.nextElementSibling.innerText;
+    navigator.clipboard.writeText(code);
+    btn.innerText = "Copiat!";
+    setTimeout(() => btn.innerText = "Copy Script", 2000);
+}
+
+async function handleChat() {
+
+    const input = document.getElementById('userInput');
+    const text = input.value.trim();
+    if (!text) return;
+
+    addMsg(text, 'user');
+    input.value = '';
+    input.style.height = 'auto';
+
+    const aiBlock = createAIBlock();
+    const responseArea = aiBlock.querySelector('.response-text');
+    const lowerText = text.toLowerCase();
+
+    // Logica Gruia
+    if (lowerText.includes("gruia")) {
+        const reply = lowerText.includes("nu")
+            ? "**Gruia-Alex** este unicul meu Fondator."
+            : "Desigur! **Gruia** este Fondatorul Diggolo AI.";
+        await typeEffect(responseArea, reply);
+        return;
+    }
+
+    // Generare imagine
+    if (lowerText.includes("generează") || lowerText.includes("imagine")) {
+        responseArea.innerHTML = "🎨 *Generez imaginea...*";
+        const imgUrl = `https://pollinations.ai/p/${encodeURIComponent(text)}?width=1024&height=1024&seed=${Math.floor(Math.random()*1000)}&model=flux`;
+        responseArea.innerHTML = `Iată imaginea:<br><img src="${imgUrl}" style="width:100%; border-radius:12px; margin-top:10px;">`;
+        return;
+    }
+
+    try {
+
+        const response = await fetch("/chat"", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                messages: [...history, { role: "user", content: text }]
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.error) {
+            throw new Error(data.error);
+        }
+
+        await typeEffect(responseArea, data.reply);
+
+        history.push(
+            { role: "user", content: text },
+            { role: "assistant", content: data.reply }
+        );
+
+    } catch (e) {
+        responseArea.innerHTML =
+            `<span style="color:#ff4444;">⚠️ Eroare: ${e.message}</span>`;
+    }
+}
+
+function createAIBlock() {
+    const win = document.getElementById('chat-window');
+    const div = document.createElement('div');
+    div.className = "msg ai-msg";
+    div.innerHTML = `<div class="response-text">...</div>`;
+    win.appendChild(div);
+    return div;
+}
+
+function addMsg(text, role) {
+    const win = document.getElementById('chat-window');
+    const div = document.createElement('div');
+    div.className = `msg ${role}-msg`;
+    div.innerText = text;
+    win.appendChild(div);
+    win.scrollTop = win.scrollHeight;
+}
+
+document.getElementById('sendBtn').onclick = handleChat;
+
+document.getElementById('userInput').oninput = function () {
+    this.style.height = 'auto';
+    this.style.height = this.scrollHeight + 'px';
+};
+
+document.getElementById('userInput').onkeydown = function (e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        handleChat();
+    }
+};
+</script>
