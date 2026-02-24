@@ -3,415 +3,224 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Diggolo AI | Premium Experience</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <title>Gerri-AI | all AI  v3</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-dark: #0d0d0e;
-            --sidebar-bg: #171719;
-            --accent-primary: #3b82f6; /* Blue ChatGPT style */
-            --accent-gemini: linear-gradient(90deg, #4285f4, #9b72cb, #d96570);
-            --card-bg: #1e1e20;
-            --text-main: #ececec;
-            --text-muted: #9fa0a3;
-            --border-color: #2d2d30;
-            --user-msg-bg: #2f2f32;
+            --bg: #030303;
+            --accent: #6366f1;
+            --gemini-grad: linear-gradient(90deg, #4285f4, #9b72cb, #d96570);
+            --glass: rgba(20, 20, 25, 0.7);
+            --border: rgba(255, 255, 255, 0.08);
+            --text: #ffffff;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background: var(--bg); color: var(--text); height: 100vh; display: flex; overflow: hidden; }
 
-        body {
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            height: 100vh;
-            display: flex;
-            overflow: hidden;
+        /* Background animat */
+        .nebula {
+            position: fixed; width: 100vw; height: 100vh;
+            background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(99, 102, 241, 0.15) 0%, transparent 50%);
+            z-index: -1; transition: 0.1s linear;
         }
 
-        /* Sidebar - Glassmorphism style */
+        /* Sidebar */
         .sidebar {
-            width: 280px;
-            background: var(--sidebar-bg);
-            border-right: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            padding: 16px;
-            transition: all 0.3s ease;
-            z-index: 1000;
+            width: 280px; background: var(--glass); backdrop-filter: blur(30px);
+            border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 25px;
         }
 
-        .new-chat-btn {
-            background: transparent;
-            color: white;
-            border: 1px solid var(--border-color);
-            padding: 12px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-weight: 500;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: background 0.2s;
+        .btn-new {
+            background: var(--gemini-grad); border: none; color: white; padding: 14px;
+            border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.3s;
         }
+        .btn-new:hover { transform: scale(1.02); box-shadow: 0 0 20px rgba(155, 114, 203, 0.4); }
 
-        .new-chat-btn:hover { background: #2d2d30; }
+        /* Main Content */
+        .main { flex: 1; display: flex; flex-direction: column; position: relative; }
+        .header { padding: 20px 40px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 20px; font-weight: 800; letter-spacing: -1px; background: var(--gemini-grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-        .chat-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
-        .chat-item {
-            padding: 10px 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            color: var(--text-muted);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            transition: 0.2s;
-        }
-        .chat-item:hover { background: #232326; color: white; }
-        .chat-item.active { background: #2d2d30; color: white; }
-
-        /* Main Area */
-        .main-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            background: radial-gradient(circle at 50% -20%, #1e1b4b 0%, var(--bg-dark) 50%);
-        }
-
-        .header {
-            padding: 15px 25px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            backdrop-filter: blur(10px);
-        }
-
-        .logo {
-            font-weight: 700;
-            font-size: 18px;
-            letter-spacing: -0.5px;
-            background: var(--accent-gemini);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        #chat-window {
-            flex: 1;
-            overflow-y: auto;
-            padding: 40px 15%;
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
-            scroll-behavior: smooth;
-        }
+        #chat-window { flex: 1; overflow-y: auto; padding: 40px 15%; display: flex; flex-direction: column; gap: 30px; scroll-behavior: smooth; }
 
         /* Mesaje */
-        .message-row { display: flex; width: 100%; flex-direction: column; }
-        .msg {
-            max-width: 85%;
-            padding: 12px 18px;
-            border-radius: 18px;
-            font-size: 15px;
-            line-height: 1.6;
-            position: relative;
+        .msg { max-width: 85%; line-height: 1.6; animation: slideUp 0.4s ease forwards; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .user-msg { align-self: flex-end; background: #1f1f23; padding: 15px 22px; border-radius: 24px 24px 4px 24px; border: 1px solid var(--border); }
+        .ai-msg { align-self: flex-start; width: 100%; border-left: 3px solid var(--accent); padding-left: 20px; }
+
+        /* Imagine UI */
+        .ai-image { max-width: 100%; border-radius: 15px; margin: 15px 0; border: 1px solid var(--border); transition: 0.3s; cursor: crosshair; }
+        .ai-image:hover { border-color: var(--accent); }
+
+        .image-tools { display: flex; gap: 10px; margin-bottom: 15px; }
+        .tool-btn { background: #333; color: white; border: none; padding: 5px 12px; border-radius: 6px; font-size: 11px; cursor: pointer; }
+
+        /* Input Zone */
+        .input-area { padding: 20px 15% 40px; }
+        .input-box {
+            background: rgba(40, 40, 45, 0.6); border: 1px solid var(--border); border-radius: 30px;
+            padding: 10px 25px; display: flex; align-items: flex-end; gap: 15px; backdrop-filter: blur(20px);
         }
 
-        .user-row { align-items: flex-end; }
-        .user-msg { background: var(--user-msg-bg); color: white; border-bottom-right-radius: 4px; }
+        textarea { flex: 1; background: transparent; border: none; color: white; font-size: 16px; padding: 12px 0; outline: none; resize: none; max-height: 150px; }
+        .send-btn { background: white; color: black; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: 900; }
 
-        .ai-row { align-items: flex-start; }
-        .ai-msg { background: transparent; width: 100%; max-width: 100%; padding-left: 0; }
-
-        /* Blocuri de cod - Nota 10 */
-        .code-block {
-            background: #000;
-            border-radius: 12px;
-            margin: 15px 0;
-            border: 1px solid var(--border-color);
-            overflow: hidden;
-        }
-        .code-header {
-            background: #1a1a1c;
-            padding: 8px 16px;
-            display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            color: var(--text-muted);
-            border-bottom: 1px solid var(--border-color);
-        }
-        .copy-btn {
-            background: transparent;
-            border: 1px solid var(--border-color);
-            color: var(--text-muted);
-            padding: 2px 8px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 11px;
-        }
-        .copy-btn:hover { background: var(--accent-primary); color: white; }
-        
-        pre {
-            padding: 20px;
-            overflow-x: auto;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 13.5px;
-            color: #e0e0e0;
-        }
-
-        /* Input Area - Gemini style Floating */
-        .input-container {
-            padding: 20px 15% 40px;
-            background: linear-gradient(transparent, var(--bg-dark) 40%);
-        }
-
-        .input-wrapper {
-            background: #1e1e20;
-            border: 1px solid var(--border-color);
-            border-radius: 28px;
-            padding: 12px 20px;
-            display: flex;
-            align-items: flex-end;
-            gap: 12px;
-            transition: border 0.3s;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-
-        .input-wrapper:focus-within { border-color: #4b4b4f; }
-
-        textarea {
-            flex: 1;
-            background: transparent;
-            border: none;
-            color: white;
-            font-size: 16px;
-            outline: none;
-            padding: 6px 0;
-            resize: none;
-            max-height: 200px;
-            min-height: 24px;
-        }
-
-        .send-btn {
-            background: var(--text-main);
-            color: black;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: transform 0.2s, opacity 0.2s;
-            flex-shrink: 0;
-            font-weight: bold;
-        }
-        .send-btn:hover { transform: scale(1.05); }
-        .send-btn.disabled { opacity: 0.3; cursor: not-allowed; }
-
-        /* Animatii si Mobile */
-        @media (max-width: 768px) {
-            #chat-window { padding: 30px 20px; }
-            .input-container { padding: 15px 15px 30px; }
-            .sidebar { position: fixed; left: -280px; height: 100%; }
-            .sidebar.open { left: 0; }
-        }
-
-        .typing-dot {
-            width: 8px; height: 8px; background: var(--text-muted);
-            border-radius: 50%; display: inline-block;
-            animation: bounce 1.4s infinite ease-in-out;
-        }
-        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
+        /* Code Format */
+        pre { background: #000; padding: 20px; border-radius: 12px; font-family: 'Fira Code', monospace; font-size: 13px; overflow-x: auto; border: 1px solid var(--border); color: #82aaff; }
     </style>
 </head>
 <body>
 
-    <aside class="sidebar" id="sidebar">
-        <button class="new-chat-btn" onclick="createNewChat()">
-            <span>+</span> Chat Nou
-        </button>
-        <div class="chat-list" id="chatList"></div>
-        <div style="margin-top: auto; font-size: 11px; color: var(--text-muted); text-align: center; border-top: 1px solid var(--border-color); pt-10">
-            Diggolo AI Premium v2.5
+<div class="nebula" id="nebula"></div>
+
+<aside class="sidebar">
+    <div class="logo">Gerri Beta</div>
+    <div style="margin-bottom: 30px;"></div>
+    <button class="btn-new" onclick="location.reload()">+ Sesiune Nouă</button>
+    <div style="flex:1"></div>
+    <div style="font-size: 10px; color: #555; text-align: center;">CREATOR: GRUIA<br>v3.0.1 PRO</div>
+</aside>
+
+<main class="main">
+    <header class="header">
+        <div style="display:flex; align-items:center; gap:10px;">
+            <div style="width:10px; height:10px; background:#22c55e; border-radius:50%; box-shadow: 0 0 10px #22c55e;"></div>
+            <span style="font-size:12px; font-weight:600; color:#22c55e;">SISTEM ONLINE</span>
         </div>
-    </aside>
+        <div style="font-size:12px; color:#888;">AI Multimodal (Text, Imagine, Editare)</div>
+    </header>
 
-    <main class="main-content">
-        <header class="header">
-            <div onclick="toggleSidebar()" style="cursor:pointer; font-size: 20px;">☰</div>
-            <div class="logo">DIGGOLO-AI</div>
-            <div style="width: 20px;"></div>
-        </header>
+    <div id="chat-window"></div>
 
-        <div id="chat-window">
-            </div>
-
-        <div class="input-container">
-            <div class="input-wrapper">
-                <textarea id="userInput" placeholder="Întreabă-mă orice..." rows="1" oninput="autoResize(this)"></textarea>
-                <div id="sendBtn" class="send-btn" onclick="send()">↑</div>
-            </div>
-            <p style="font-size: 11px; text-align: center; color: var(--text-muted); margin-top: 12px;">
-                Creat de Gruia. AI-ul poate genera informații eronate.
-            </p>
+    <div class="input-area">
+        <div id="img-preview-box" style="display:none; padding:10px;">
+            <img id="img-preview" src="" style="height:50px; border-radius:5px;">
+            <span onclick="cancelImg()" style="cursor:pointer; color:red; margin-left:10px;">✕</span>
         </div>
-    </main>
+        <div class="input-box">
+            <label style="cursor:pointer; font-size:20px;">
+                📷<input type="file" id="fileIn" hidden onchange="previewFile(this)">
+            </label>
+            <textarea id="userInput" placeholder="Scrie un mesaj sau cere o imagine (ex: 'Generează o poză cu...')" rows="1" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"></textarea>
+            <div class="send-btn" onclick="processInput()">↑</div>
+        </div>
+    </div>
+</main>
 
 <script>
-    const API_KEY = "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";
-    let chats = JSON.parse(localStorage.getItem('diggolo_v10')) || [];
-    let currentId = null;
+    const GROQ_KEY = "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";
+    const BANNER = `/* Gerri-AI | CREATED BY GRUIA */`;
+    
+    let messages = [{ role: "system", content: "Ești Gerri-AI, un asistent multimodal premium creat de Gruia. Dacă utilizatorul cere o imagine, răspunde scurt confirmând cererea. NU genera cod dacă nu e cerut explicit, trebuie sa faci totul frumos,organizay." }];
+    let currentBase64 = null;
 
-    const BANNER = `░█▀▀▄ ▀█▀ ░█▀▀█ ░█▀▀█ ░█▀▀▀█ ░█─── ░█▀▀▀█ 　 ── 　 ─█▀▀█ ▀█▀ 
-░█─░█ ░█─ ░█─▄▄ ░█─▄▄ ░█──░█ ░█─── ░█──░█ 　 ▀▀ 　 ░█▄▄█ ░█─ 
-░█▄▄▀ ▄█▄ ░█▄▄█ ░█▄▄█ ░█▄▄▄█ ░█▄▄█ ░█▄▄▄█ 　 ── 　 ░█─░█ ▄█▄`;
+    // Nebula effect
+    document.addEventListener('mousemove', e => {
+        document.getElementById('nebula').style.setProperty('--x', e.clientX + 'px');
+        document.getElementById('nebula').style.setProperty('--y', e.clientY + 'px');
+    });
 
-    function autoResize(textarea) {
-        textarea.style.height = 'auto';
-        textarea.style.height = textarea.scrollHeight + 'px';
+    function previewFile(input) {
+        const file = input.files[0];
+        const reader = new FileReader();
+        reader.onload = e => {
+            currentBase64 = e.target.result;
+            document.getElementById('img-preview').src = currentBase64;
+            document.getElementById('img-preview-box').style.display = 'block';
+        };
+        reader.readAsDataURL(file);
     }
 
-    function createNewChat() {
-        const id = Date.now();
-        chats.unshift({ 
-            id, 
-            title: "Chat Nou", 
-            messages: [{ role: "system", content: "Ești Diggolo-AI, un asistent creat de Gruia. Răspunzi inteligent, politicos și oferi cod corect formatat." }] 
-        });
-        save();
-        loadChat(id);
-        if(window.innerWidth < 768) toggleSidebar();
+    function cancelImg() {
+        currentBase64 = null;
+        document.getElementById('img-preview-box').style.display = 'none';
     }
 
-    function loadChat(id) {
-        currentId = id;
-        const chat = chats.find(c => c.id === id);
-        const win = document.getElementById('chat-window');
-        win.innerHTML = '';
-        chat.messages.forEach(m => {
-            if(m.role !== 'system') addMsgUI(m.content, m.role);
-        });
-        renderList();
-    }
-
-    async function send() {
+    async function processInput() {
         const input = document.getElementById('userInput');
         const text = input.value.trim();
-        if(!text) return;
+        if(!text && !currentBase64) return;
 
-        input.value = '';
-        input.style.height = 'auto';
-        addMsgUI(text, 'user');
+        addMsgUI(text, 'user', currentBase64);
+        input.value = ''; input.style.height = 'auto';
 
-        const chat = chats.find(c => c.id === currentId);
-        chat.messages.push({ role: "user", content: text });
+        // Logica Generare Imagine
+        if(text.toLowerCase().includes("generează") || text.toLowerCase().includes("fă o poză") || text.toLowerCase().includes("imagine cu")) {
+            addMsgUI("Generez imaginea solicitată folosind viziunea artistică Gerri...", 'ai');
+            generateImage(text);
+            cancelImg();
+            return;
+        }
+
+        // Logica AI Chat (Text/Vision)
+        const loading = addMsgUI("Analizez...", 'ai');
         
-        // Efect de incarcare
-        const loadingDiv = addMsgUI('<div class="typing-dot"></div><div class="typing-dot" style="animation-delay:0.2s"></div><div class="typing-dot" style="animation-delay:0.4s"></div>', 'ai');
+        let content = [{ type: "text", text: text || "Analizează imaginea asta." }];
+        if(currentBase64) content.push({ type: "image_url", image_url: { url: currentBase64 } });
+
+        messages.push({ role: "user", content: content });
+        cancelImg();
 
         try {
             const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                 method: "POST",
-                headers: { "Authorization": `Bearer ${API_KEY}`, "Content-Type": "application/json" },
-                body: JSON.stringify({ 
-                    model: "llama-3.3-70b-versatile", 
-                    messages: chat.messages,
-                    temperature: 0.7
-                })
+                headers: { "Authorization": `Bearer ${GROQ_KEY}`, "Content-Type": "application/json" },
+                body: JSON.stringify({ model: "llama-3.2-11b-vision-preview", messages: messages })
             });
             const data = await res.json();
-            loadingDiv.remove();
-
             const reply = data.choices[0].message.content;
-            chat.messages.push({ role: "assistant", content: reply });
-            
-            // Actualizam titlul chat-ului dupa primul mesaj
-            if(chat.title === "Chat Nou") chat.title = text.substring(0, 30);
-            
+            loading.remove();
             addMsgUI(reply, 'ai');
-            save();
-        } catch (e) {
-            loadingDiv.innerText = "Eroare: Nu am putut contacta serverul.";
-        }
+            messages.push({ role: "assistant", content: reply });
+        } catch (e) { loading.innerText = "Eroare la procesare."; }
     }
 
-    function addMsgUI(txt, role) {
-        const win = document.getElementById('chat-window');
-        const row = document.createElement('div');
-        row.className = `message-row ${role}-row`;
+    function generateImage(prompt) {
+        const seed = Math.floor(Math.random() * 1000000);
+        const imgUrl = `https://pollinations.ai/p/${encodeURIComponent(prompt)}?width=1024&height=1024&seed=${seed}&model=flux`;
         
+        const win = document.getElementById('chat-window');
+        const div = document.createElement('div');
+        div.className = "msg ai-msg";
+        div.innerHTML = `
+            <div>Iată imaginea generată pentru tine:</div>
+            <div class="image-tools">
+                <button class="tool-btn" onclick="applyFilter(this, 'grayscale(100%)')">B&W</button>
+                <button class="tool-btn" onclick="applyFilter(this, 'sepia(100%)')">Sepia</button>
+                <button class="tool-btn" onclick="applyFilter(this, 'invert(100%)')">Invert</button>
+                <button class="tool-btn" onclick="applyFilter(this, 'none')">Reset</button>
+            </div>
+            <img src="${imgUrl}" class="ai-image" onload="this.scrollIntoView()">
+        `;
+        win.appendChild(div);
+    }
+
+    function applyFilter(btn, filter) {
+        const img = btn.closest('.ai-msg').querySelector('.ai-image');
+        img.style.filter = filter;
+    }
+
+    function addMsgUI(txt, role, img = null) {
+        const win = document.getElementById('chat-window');
         const div = document.createElement('div');
         div.className = `msg ${role}-msg`;
 
-        if (role === 'ai') {
-            // Logica avansata de parsare (Cod + Markdown Simplu)
-            const parts = txt.split(/```/);
-            parts.forEach((part, index) => {
-                if (index % 2 === 1) {
-                    const codeBlock = document.createElement('div');
-                    codeBlock.className = 'code-block';
-                    codeBlock.innerHTML = `
-                        <div class="code-header"><span>Script</span><button class="copy-btn" onclick="copyCode(this)">Copy Code</button></div>
-                        <pre><code><span style="color:#3b82f6; opacity:0.5">${BANNER}</span>\n\n${escapeHtml(part.trim())}</code></pre>
-                    `;
-                    div.appendChild(codeBlock);
-                } else {
-                    const content = document.createElement('div');
-                    content.innerHTML = formatMarkdown(part);
-                    div.appendChild(content);
-                }
-            });
+        if(img && role === 'user') {
+            div.innerHTML = `<img src="${img}" style="max-width:200px; border-radius:10px;"><br>${txt}`;
+        } else if(txt.includes("```")) {
+            const parts = txt.split("```");
+            div.innerHTML = parts[0] + `<pre><code>${BANNER}\n\n${parts[1].trim()}</code></pre>` + (parts[2] || "");
         } else {
-            div.innerText = txt;
+            div.innerHTML = txt.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
         }
 
-        row.appendChild(div);
-        win.appendChild(row);
+        win.appendChild(div);
         win.scrollTop = win.scrollHeight;
         return div;
     }
-
-    function formatMarkdown(text) {
-        return text
-            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-            .replace(/\*(.*?)\*/g, '<em>$1</em>')
-            .replace(/\n/g, '<br>');
-    }
-
-    function escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-    }
-
-    function copyCode(btn) {
-        const code = btn.parentElement.nextElementSibling.innerText;
-        navigator.clipboard.writeText(code);
-        btn.innerText = "Copied!";
-        setTimeout(() => btn.innerText = "Copy Code", 2000);
-    }
-
-    function renderList() {
-        const l = document.getElementById('chatList');
-        l.innerHTML = '';
-        chats.forEach(c => {
-            const d = document.createElement('div');
-            d.className = `chat-item ${c.id === currentId ? 'active' : ''}`;
-            d.innerText = c.title;
-            d.onclick = () => loadChat(c.id);
-            l.appendChild(d);
-        });
-    }
-
-    function save() { localStorage.setItem('diggolo_v10', JSON.stringify(chats)); renderList(); }
-    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
-
-    // Init
-    if(chats.length > 0) loadChat(chats[0].id); else createNewChat();
 </script>
 </body>
 </html>
