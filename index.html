@@ -2,83 +2,37 @@
 <html lang="ro">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Diggolo AI | Thinking Edition</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diggolo AI v4 | Gruia Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg: #09090b;
-            --accent: #3b82f6;
-            --gemini-grad: linear-gradient(90deg, #4285f4, #9b72cb, #d96570);
-            --glass: rgba(18, 18, 20, 0.9);
-            --border: rgba(255, 255, 255, 0.1);
-            --text: #f4f4f5;
-            --thought-bg: rgba(255, 255, 255, 0.03);
-        }
-
+        :root { --bg: #0d0d0e; --accent: #3b82f6; --glass: rgba(22, 22, 26, 0.8); --text: #ececec; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
         body { background: var(--bg); color: var(--text); height: 100vh; display: flex; overflow: hidden; }
-
-        /* Sidebar */
-        .sidebar {
-            width: 280px; background: var(--glass); backdrop-filter: blur(20px);
-            border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 25px;
-        }
-
-        .logo { font-size: 22px; font-weight: 800; background: var(--gemini-grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 40px; }
-
-        /* Chat Area */
-        #chat-window { flex: 1; overflow-y: auto; padding: 40px 15%; display: flex; flex-direction: column; gap: 30px; scroll-behavior: smooth; }
-
-        .msg { max-width: 90%; animation: slideUp 0.4s ease forwards; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-
-        .user-msg { align-self: flex-end; background: #27272a; padding: 12px 20px; border-radius: 18px 18px 4px 18px; border: 1px solid var(--border); font-size: 15px; }
-        .ai-msg { align-self: flex-start; width: 100%; position: relative; }
-
-        /* Thinking Block */
-        .thought-container {
-            margin-bottom: 10px;
-            border-left: 2px solid #444;
-            padding-left: 15px;
-            font-size: 13px;
-            color: #888;
-        }
         
-        .thought-header {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            user-select: none;
-            font-weight: 500;
-            padding: 5px 0;
-        }
+        .sidebar { width: 260px; background: #000; border-right: 1px solid #222; padding: 20px; display: flex; flex-direction: column; }
+        .logo { font-size: 20px; font-weight: 800; background: linear-gradient(90deg, #4285f4, #9b72cb); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 30px; }
+        
+        #chat-window { flex: 1; overflow-y: auto; padding: 40px 15%; display: flex; flex-direction: column; gap: 25px; scroll-behavior: smooth; }
+        
+        /* Bubble Design */
+        .msg { max-width: 85%; animation: fadeIn 0.3s ease; line-height: 1.6; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .user-msg { align-self: flex-end; background: #27272a; padding: 12px 18px; border-radius: 20px 20px 4px 20px; }
+        .ai-msg { align-self: flex-start; width: 100%; border-left: 2px solid var(--accent); padding-left: 15px; }
 
-        .thought-content {
-            background: var(--thought-bg);
-            border-radius: 8px;
-            padding: 10px;
-            margin-top: 5px;
-            font-style: italic;
-            display: none; /* Ascuns initial */
-        }
+        /* Thinking Style */
+        .thought { font-size: 13px; color: #71717a; margin-bottom: 8px; font-style: italic; display: flex; align-items: center; gap: 8px; }
+        .spinner { width: 12px; height: 12px; border: 2px solid #333; border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360px); } }
 
-        .ai-response { font-size: 16px; line-height: 1.6; }
+        .response-text { font-size: 16px; }
+        .ai-img { max-width: 100%; border-radius: 12px; margin-top: 15px; border: 1px solid #333; display: block; background: #1a1a1a; min-height: 200px; }
 
-        /* Input Zone */
-        .input-area { padding: 20px 15% 40px; background: linear-gradient(transparent, var(--bg) 50%); }
-        .input-box {
-            background: #18181b; border: 1px solid var(--border); border-radius: 24px;
-            padding: 10px 20px; display: flex; align-items: flex-end; gap: 15px;
-        }
-
-        textarea { flex: 1; background: transparent; border: none; color: white; font-size: 16px; padding: 10px 0; outline: none; resize: none; max-height: 150px; }
-        .send-btn { background: white; color: black; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: bold; }
-
-        /* Code & Images */
-        pre { background: #000; padding: 15px; border-radius: 10px; font-family: 'Fira Code', monospace; font-size: 13px; overflow-x: auto; color: #a1a1aa; margin: 10px 0; border: 1px solid var(--border); }
-        .ai-image { max-width: 100%; border-radius: 12px; margin-top: 15px; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .input-area { padding: 20px 15% 40px; background: linear-gradient(transparent, var(--bg)); }
+        .input-box { background: #1c1c1f; border: 1px solid #333; border-radius: 20px; padding: 12px 20px; display: flex; align-items: center; gap: 15px; }
+        textarea { flex: 1; background: transparent; border: none; color: white; font-size: 16px; outline: none; resize: none; }
+        .send-btn { background: #fff; color: #000; width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: bold; }
 
         @media (max-width: 768px) { #chat-window { padding: 20px 5%; } .input-area { padding: 10px 5% 20px; } .sidebar { display: none; } }
     </style>
@@ -87,17 +41,16 @@
 
 <aside class="sidebar">
     <div class="logo">DIGGOLO AI</div>
-    <div style="font-size: 12px; color: #555; margin-bottom: 20px;">MODEL: o1-Style Thinking</div>
-    <button style="background:#27272a; color:white; border:none; padding:12px; border-radius:10px; cursor:pointer;" onclick="location.reload()">+ Sesiune Nouă</button>
+    <button style="background:#222; color:white; border:none; padding:10px; border-radius:8px; cursor:pointer;" onclick="location.reload()">+ Chat Nou</button>
+    <div style="margin-top:auto; font-size:10px; color:#444;">V4.0 | GRUIA PRO</div>
 </aside>
 
 <main style="flex:1; display:flex; flex-direction:column;">
     <div id="chat-window"></div>
-
     <div class="input-area">
         <div class="input-box">
-            <textarea id="userInput" placeholder="Întreabă-mă ceva..." rows="1" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"></textarea>
-            <div class="send-btn" onclick="handleSend()">↑</div>
+            <textarea id="userInput" placeholder="Scrie ceva sau cere o poză..." rows="1"></textarea>
+            <div class="send-btn" onclick="handleChat()">↑</div>
         </div>
     </div>
 </main>
@@ -106,101 +59,78 @@
     const API_KEY = "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";
     let history = [];
 
-    async function handleSend() {
+    async function handleChat() {
         const input = document.getElementById('userInput');
         const text = input.value.trim();
-        if (!text) return;
+        if(!text) return;
 
         addMsg(text, 'user');
-        input.value = ''; input.style.height = 'auto';
-
-        // Creăm elementul AI cu zona de gândire
-        const aiMsgDiv = createAIPlaceholder();
-        const thoughtContent = aiMsgDiv.querySelector('.thought-content');
-        const responseArea = aiMsgDiv.querySelector('.ai-response');
-
-        // PAS 1: Simulăm "Gândirea" (Analiză intenție)
-        thoughtContent.innerText = "Analizez contextul întrebării... Verific datele disponibile... Pregătesc un răspuns concis.";
+        input.value = '';
         
-        // Logica Generare Imagine
-        if (text.toLowerCase().includes("generează") || text.toLowerCase().includes("imagine")) {
-            thoughtContent.innerText = "Accesare motor de randare grafică... Generare prompt artistic... Finalizare imagine.";
+        const aiDiv = createAIBlock();
+        const thoughtEl = aiDiv.querySelector('.thought');
+        const textEl = aiDiv.querySelector('.response-text');
+
+        // Logică Generare Imagine
+        if(text.toLowerCase().includes("generează") || text.toLowerCase().includes("fă-mi o poză")) {
+            thoughtEl.innerHTML = '<div class="spinner"></div> Se gândește la designul mașinii...';
             setTimeout(() => {
-                const seed = Math.floor(Math.random() * 999999);
+                const seed = Math.floor(Math.random() * 100000);
                 const imgUrl = `https://pollinations.ai/p/${encodeURIComponent(text)}?width=1024&height=1024&seed=${seed}&model=flux`;
-                responseArea.innerHTML = `Am generat imaginea bazată pe descrierea ta:<br><img src="${imgUrl}" class="ai-image">`;
-            }, 1500);
+                thoughtEl.innerHTML = '✅ Imagine generată cu succes.';
+                textEl.innerHTML = `Iată ce am creat pentru tine, Gruia:<br><img src="${imgUrl}" class="ai-img" alt="Generare..." onerror="this.src='https://via.placeholder.com/1024x1024?text=Eroare+Imagine+Incearca+Din+Nou'">`;
+            }, 2000);
             return;
         }
 
-        // PAS 2: Apel API pentru Text
+        // Logică Text
+        thoughtEl.innerHTML = '<div class="spinner"></div> Se gândește la un răspuns inteligent...';
         try {
             const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                 method: "POST",
                 headers: { "Authorization": `Bearer ${API_KEY}`, "Content-Type": "application/json" },
                 body: JSON.stringify({
                     model: "llama-3.3-70b-versatile",
-                    messages: [...history, { role: "user", content: text }]
+                    messages: [...history, {role: "user", content: text}],
+                    temperature: 0.7
                 })
             });
-
+            
             const data = await res.json();
+            if(!res.ok) throw new Error();
+            
             const reply = data.choices[0].message.content;
-
-            // Afișăm răspunsul
-            responseArea.innerHTML = formatAIResponse(reply);
-            history.push({ role: "user", content: text }, { role: "assistant", content: reply });
+            thoughtEl.style.display = 'none'; // Ascunde gândirea când e gata
+            textEl.innerHTML = reply.replace(/\n/g, '<br>');
+            history.push({role: "user", content: text}, {role: "assistant", content: reply});
         } catch (e) {
-            responseArea.innerText = "Eroare de conexiune. Te rog să reîncerci.";
+            thoughtEl.innerHTML = '❌ Eroare la procesare.';
+            textEl.innerText = "Se pare că serverul Groq e puțin obosit. Mai încearcă o dată!";
         }
     }
 
-    function createAIPlaceholder() {
+    function createAIBlock() {
         const win = document.getElementById('chat-window');
         const div = document.createElement('div');
         div.className = "msg ai-msg";
-        div.innerHTML = `
-            <div class="thought-container">
-                <div class="thought-header" onclick="toggleThought(this)">
-                    <span class="icon">▼</span> <span>Gândire (Thinking Process)</span>
-                </div>
-                <div class="thought-content" style="display: block;">Se inițializează analiza...</div>
-            </div>
-            <div class="ai-response">...</div>
-        `;
+        div.innerHTML = `<div class="thought"></div><div class="response-text"></div>`;
         win.appendChild(div);
         win.scrollTop = win.scrollHeight;
         return div;
     }
 
-    function toggleThought(header) {
-        const content = header.nextElementSibling;
-        const icon = header.querySelector('.icon');
-        if (content.style.display === "none") {
-            content.style.display = "block";
-            icon.innerText = "▼";
-        } else {
-            content.style.display = "none";
-            icon.innerText = "▶";
-        }
-    }
-
-    function addMsg(txt, role) {
+    function addMsg(t, r) {
         const win = document.getElementById('chat-window');
         const div = document.createElement('div');
-        div.className = `msg ${role}-msg`;
-        div.innerText = txt;
+        div.className = `msg ${r}-msg`;
+        div.innerText = t;
         win.appendChild(div);
         win.scrollTop = win.scrollHeight;
     }
 
-    function formatAIResponse(txt) {
-        if (txt.includes("```")) {
-            const parts = txt.split("```");
-            return parts[0] + `<pre><code>/* Diggolo AI Script */\n\n${parts[1].trim()}</code></pre>` + (parts[2] || "");
-        }
-        return txt.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
-    }
+    document.getElementById('userInput').addEventListener('keypress', e => {
+        if(e.key === 'Enter') handleChat();
+    });
 </script>
 </body>
 </html>
