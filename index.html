@@ -1,13 +1,116 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diggolo AI</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #0f172a;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+#chat-window {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.msg {
+    margin-bottom: 15px;
+    max-width: 80%;
+    padding: 12px 16px;
+    border-radius: 12px;
+    word-wrap: break-word;
+}
+
+.user-msg {
+    background: #2563eb;
+    align-self: flex-end;
+    margin-left: auto;
+}
+
+.ai-msg {
+    background: #1e293b;
+}
+
+#input-area {
+    display: flex;
+    padding: 15px;
+    background: #0f172a;
+    border-top: 1px solid #1e293b;
+}
+
+#userInput {
+    flex: 1;
+    resize: none;
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+    outline: none;
+    font-size: 14px;
+}
+
+#sendBtn {
+    margin-left: 10px;
+    padding: 10px 18px;
+    border-radius: 10px;
+    border: none;
+    background: #2563eb;
+    color: white;
+    cursor: pointer;
+}
+
+.code-container {
+    margin-top: 10px;
+    background: #0f172a;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.code-header {
+    background: #1e293b;
+    padding: 8px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+}
+
+.code-content {
+    padding: 10px;
+    font-family: monospace;
+    white-space: pre-wrap;
+}
+
+.copy-btn {
+    background: #2563eb;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 6px;
+    color: white;
+    cursor: pointer;
+    font-size: 12px;
+}
+</style>
+</head>
+<body>
+
+<div id="chat-window"></div>
+
+<div id="input-area">
+    <textarea id="userInput" placeholder="Scrie un mesaj..."></textarea>
+    <button id="sendBtn">Trimite</button>
+</div>
+
 <script>
 let history = [];
-
-function openAbout() {
-    document.getElementById('about-modal').style.display = 'flex';
-}
-
-function closeAbout() {
-    document.getElementById('about-modal').style.display = 'none';
-}
 
 async function typeEffect(element, text) {
     element.innerHTML = "";
@@ -61,18 +164,16 @@ async function handleChat() {
     const responseArea = aiBlock.querySelector('.response-text');
     const lowerText = text.toLowerCase();
 
-    // Logica Gruia
     if (lowerText.includes("gruia")) {
         const reply = lowerText.includes("nu")
-            ? "**Gruia-Alex** este unicul meu Fondator."
-            : "Desigur! **Gruia** este Fondatorul Diggolo AI.";
+            ? "Gruia-Alex este unicul meu Fondator."
+            : "Desigur! Gruia este Fondatorul Diggolo AI.";
         await typeEffect(responseArea, reply);
         return;
     }
 
-    // Generare imagine
     if (lowerText.includes("generează") || lowerText.includes("imagine")) {
-        responseArea.innerHTML = "🎨 *Generez imaginea...*";
+        responseArea.innerHTML = "Generez imaginea...";
         const imgUrl = `https://pollinations.ai/p/${encodeURIComponent(text)}?width=1024&height=1024&seed=${Math.floor(Math.random()*1000)}&model=flux`;
         responseArea.innerHTML = `Iată imaginea:<br><img src="${imgUrl}" style="width:100%; border-radius:12px; margin-top:10px;">`;
         return;
@@ -80,7 +181,7 @@ async function handleChat() {
 
     try {
 
-        const response = await fetch("/chat"", {
+        const response = await fetch("/chat", {   
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -113,7 +214,7 @@ function createAIBlock() {
     const win = document.getElementById('chat-window');
     const div = document.createElement('div');
     div.className = "msg ai-msg";
-    div.innerHTML = `<div class="response-text">...</div>`;
+    div.innerHTML = `<div class="response-text"></div>`;
     win.appendChild(div);
     return div;
 }
@@ -141,3 +242,6 @@ document.getElementById('userInput').onkeydown = function (e) {
     }
 };
 </script>
+
+</body>
+</html>
