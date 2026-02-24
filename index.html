@@ -22,69 +22,54 @@
         /* SIDEBAR */
         .sidebar {
             width: 300px; background: var(--sidebar-bg); border-right: 1px solid var(--border);
-            display: flex; flex-direction: column; padding: 30px 20px; transition: 0.3s;
+            display: flex; flex-direction: column; padding: 30px 20px;
         }
 
-        .logo-container { margin-bottom: 40px; }
+        .logo-container { margin-bottom: 30px; text-align: center; }
         .logo { font-size: 24px; font-weight: 800; background: var(--accent-grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
-        .nav-btn {
-            width: 100%; padding: 12px 15px; border-radius: 12px; border: none; background: transparent;
-            color: #94a3b8; text-align: left; cursor: pointer; display: flex; align-items: center; gap: 12px;
-            font-size: 14px; font-weight: 500; transition: 0.2s; margin-bottom: 5px;
+        /* Grup de butoane sus */
+        .actions-top { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 25px; }
+        
+        .action-btn {
+            padding: 12px; border-radius: 12px; border: 1px solid var(--border);
+            background: var(--glass); color: white; cursor: pointer; font-size: 12px;
+            font-weight: 600; transition: 0.3s; display: flex; flex-direction: column; align-items: center; gap: 5px;
         }
-        .nav-btn:hover, .nav-btn.active { background: var(--glass); color: white; }
+        .action-btn:hover { background: rgba(255,255,255,0.1); border-color: var(--accent); }
+        .btn-primary { background: var(--accent-grad); border: none; }
 
-        /* ABOUT SECTION IN SIDEBAR */
+        /* ABOUT MODAL (INFO CARD) */
+        #about-modal {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(15px); z-index: 1000; align-items: center; justify-content: center; padding: 20px;
+        }
         .about-card {
-            margin-top: auto; background: var(--glass); border: 1px solid var(--border);
-            border-radius: 16px; padding: 20px; text-align: center;
+            background: #111; border: 1px solid var(--border); border-radius: 28px;
+            width: 100%; max-width: 450px; padding: 40px 30px; text-align: center; position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
         .profile-img {
-            width: 70px; height: 70px; border-radius: 50%; border: 2px solid var(--accent);
-            margin-bottom: 12px; object-fit: cover; background: #222;
+            width: 110px; height: 110px; border-radius: 50%; border: 3px solid var(--accent);
+            margin: 0 auto 20px; object-fit: cover; background: #222; display: block;
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
         }
-        .about-name { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
-        .about-title { font-size: 11px; color: var(--accent); font-weight: 600; text-transform: uppercase; margin-bottom: 10px; }
-        .about-desc { font-size: 12px; color: #94a3b8; line-height: 1.4; }
+        .about-name { font-size: 22px; font-weight: 800; margin-bottom: 5px; }
+        .about-title { color: var(--accent); font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; }
+        .about-desc { font-size: 14px; color: #94a3b8; line-height: 1.6; margin-bottom: 25px; }
+        .close-about { background: #222; color: white; border: none; padding: 10px 25px; border-radius: 10px; cursor: pointer; font-weight: 600; }
 
-        /* MAIN CHAT */
-        .main-content { flex: 1; display: flex; flex-direction: column; position: relative; }
-        
-        #chat-window { flex: 1; overflow-y: auto; padding: 50px 15%; display: flex; flex-direction: column; gap: 30px; }
-
-        /* MESSAGES */
+        /* CHAT WINDOW */
+        #chat-window { flex: 1; overflow-y: auto; padding: 50px 18%; display: flex; flex-direction: column; gap: 30px; }
         .msg { max-width: 85%; line-height: 1.6; animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } }
-        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .user-msg { align-self: flex-end; background: #1e1e20; padding: 14px 22px; border-radius: 20px 20px 4px 20px; border: 1px solid var(--border); }
         .ai-msg { align-self: flex-start; width: 100%; border-left: 3px solid var(--accent); padding-left: 20px; }
 
-        .thinking { font-size: 13px; color: #64748b; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
-        .dot-loader { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; animation: pulse 1s infinite alternate; }
-
-        /* INPUT AREA */
-        .input-area { padding: 30px 15% 50px; }
-        .input-card { 
-            background: #111113; border: 1px solid var(--border); border-radius: 24px; 
-            padding: 12px 24px; display: flex; align-items: center; gap: 15px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-        }
+        .input-area { padding: 30px 18% 50px; }
+        .input-card { background: #111113; border: 1px solid var(--border); border-radius: 24px; padding: 12px 24px; display: flex; align-items: center; gap: 15px; }
         textarea { flex: 1; background: transparent; border: none; color: white; font-size: 16px; outline: none; resize: none; }
         .send-btn { background: white; color: black; width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: bold; }
-
-        /* MODAL SETTINGS */
-        #settings-modal {
-            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8);
-            backdrop-filter: blur(10px); z-index: 1000; align-items: center; justify-content: center;
-        }
-        .modal-content {
-            background: #111; border: 1px solid var(--border); border-radius: 24px;
-            width: 400px; padding: 30px; position: relative;
-        }
-        .close-modal { position: absolute; top: 20px; right: 20px; cursor: pointer; color: #666; }
-
-        @media (max-width: 900px) { .sidebar { display: none; } #chat-window, .input-area { padding: 20px 5%; } }
     </style>
 </head>
 <body>
@@ -94,39 +79,47 @@
             <div class="logo">DIGGOLO AI</div>
         </div>
 
-        <button class="nav-btn active" onclick="location.reload()">💬 Chat Principal</button>
-        <button class="nav-btn" onclick="openSettings()">⚙️ Setări Sistem</button>
-        <button class="nav-btn" onclick="alert('Istoric salvat local.')">📁 Istoric Conversații</button>
+        <div class="actions-top">
+            <button class="action-btn btn-primary" onclick="location.reload()">
+                <span>➕</span>
+                <span>Nou</span>
+            </button>
+            <button class="action-btn" onclick="openAbout()">
+                <span>👤</span>
+                <span>Despre</span>
+            </button>
+        </div>
 
-        <div class="about-card">
-            <img src="https://via.placeholder.com/150" alt="Gruia" class="profile-img">
-            <div class="about-name">Gruia</div>
-            <div class="about-title">Fondator: DiggoloAI-Gruia</div>
-            <div class="about-desc">
-                Pasionat de tehnologie și viitor. Am creat Diggolo AI pentru a oferi o experiență de inteligență artificială fără limite.
-            </div>
+        <div style="flex:1">
+            <p style="font-size: 12px; color: #444; margin-bottom: 10px; font-weight: 600;">FUNCȚII</p>
+            <button class="nav-btn" style="width:100%; text-align:left; background:transparent; border:none; color:#888; padding:10px 0; cursor:pointer;" onclick="alert('Setări în curând')">⚙️ Setări Sistem</button>
+            <button class="nav-btn" style="width:100%; text-align:left; background:transparent; border:none; color:#888; padding:10px 0; cursor:pointer;">📁 Istoric Chat</button>
+        </div>
+
+        <div style="font-size: 10px; color: #333; text-align: center; border-top: 1px solid #111; pt: 20px;">
+            © 2026 DIGGOLO AI | GRUIA
         </div>
     </aside>
 
-    <main class="main-content">
+    <main style="flex:1; display:flex; flex-direction:column;">
         <div id="chat-window"></div>
-
         <div class="input-area">
             <div class="input-card">
-                <textarea id="userInput" placeholder="Scrie ceva sau cere o imagine..." rows="1"></textarea>
+                <textarea id="userInput" placeholder="Scrie ceva sau generează o imagine..." rows="1"></textarea>
                 <div class="send-btn" onclick="handleChat()">↑</div>
             </div>
         </div>
     </main>
 
-    <div id="settings-modal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closeSettings()">✕ Close</span>
-            <h2 style="margin-bottom: 20px;">Setări</h2>
-            <p style="color: #888; margin-bottom: 15px;">Model: <b>Llama 3.3 70B Versatile</b></p>
-            <p style="color: #888; margin-bottom: 15px;">Imagine: <b>Flux-1 HD Engine</b></p>
-            <hr style="border: 0; border-top: 1px solid #222; margin-bottom: 15px;">
-            <p style="font-size: 12px; color: #555;">© 2026 Diggolo AI by Gruia. Toate drepturile rezervate.</p>
+    <div id="about-modal">
+        <div class="about-card">
+            <img src="https://via.placeholder.com/150" alt="Gruia" class="profile-img">
+            <div class="about-name">Gruia</div>
+            <div class="about-title">Fondator: DiggoloAI-Gruia</div>
+            <div class="about-desc">
+                Vizionarul din spatele Diggolo AI. Am construit această platformă pentru a integra cele mai avansate modele de limbaj (Llama 3.3) și generație de imagini (Flux-1) într-o interfață premium, accesibilă oricui.
+            </div>
+            <button class="close-about" onclick="closeAbout()">Am înțeles</button>
         </div>
     </div>
 
@@ -134,8 +127,8 @@
     const API_KEY = "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";
     let history = [];
 
-    function openSettings() { document.getElementById('settings-modal').style.display = 'flex'; }
-    function closeSettings() { document.getElementById('settings-modal').style.display = 'none'; }
+    function openAbout() { document.getElementById('about-modal').style.display = 'flex'; }
+    function closeAbout() { document.getElementById('about-modal').style.display = 'none'; }
 
     async function handleChat() {
         const input = document.getElementById('userInput');
@@ -146,23 +139,18 @@
         input.value = '';
 
         const aiBlock = createAIBlock();
-        const thinking = aiBlock.querySelector('.thinking');
-        const response = aiBlock.querySelector('.response-text');
+        const responseArea = aiBlock.querySelector('.response-text');
 
-        // Logică IMAGINE
-        if(text.toLowerCase().includes("generează") || text.toLowerCase().includes("fă-mi o poză")) {
-            thinking.innerHTML = '<div class="dot-loader"></div> Se accesează motorul grafic Flux-1...';
+        if(text.toLowerCase().includes("generează") || text.toLowerCase().includes("imagine")) {
+            responseArea.innerHTML = "🎨 <i>Creez imaginea cerută...</i>";
             setTimeout(() => {
-                const seed = Math.floor(Math.random() * 888888);
+                const seed = Math.floor(Math.random() * 999999);
                 const imgUrl = `https://pollinations.ai/p/${encodeURIComponent(text)}?width=1024&height=1024&seed=${seed}&model=flux`;
-                thinking.innerHTML = '✅ Imagine randată de Diggolo AI';
-                response.innerHTML = `<img src="${imgUrl}" style="width:100%; border-radius:12px; border:1px solid #333; margin-top:10px;">`;
+                responseArea.innerHTML = `<img src="${imgUrl}" style="width:100%; border-radius:15px; border:1px solid #333; margin-top:10px;">`;
             }, 2500);
             return;
         }
 
-        // Logică TEXT
-        thinking.innerHTML = '<div class="dot-loader"></div> Diggolo procesează datele...';
         try {
             const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                 method: "POST",
@@ -171,12 +159,10 @@
             });
             const data = await res.json();
             const reply = data.choices[0].message.content;
-            
-            thinking.style.display = 'none';
-            response.innerHTML = reply.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+            responseArea.innerHTML = reply.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
             history.push({role: "user", content: text}, {role: "assistant", content: reply});
         } catch(e) {
-            thinking.innerHTML = '❌ Eroare la server.';
+            responseArea.innerText = 'Eroare la conexiune.';
         }
     }
 
@@ -184,7 +170,7 @@
         const win = document.getElementById('chat-window');
         const div = document.createElement('div');
         div.className = "msg ai-msg";
-        div.innerHTML = `<div class="thinking"></div><div class="response-text"></div>`;
+        div.innerHTML = `<div class="response-text">...</div>`;
         win.appendChild(div);
         win.scrollTop = win.scrollHeight;
         return div;
