@@ -4,75 +4,79 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Diggolo AI | Standard Edition</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #0d0d0d;
             --sidebar: #000000;
             --accent: #10a37f;
-            --text: #ececec;
-            --border: rgba(255,255,255,0.1);
+            --text-main: #ffffff;
+            --text-secondary: #d1d1d1;
+            --border: rgba(255,255,255,0.15);
             --user-bubble: #2f2f2f;
-            --code-bg: #000000;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--bg); color: var(--text); height: 100vh; display: flex; overflow: hidden; }
+        body { background: var(--bg); color: var(--text-main); height: 100vh; display: flex; overflow: hidden; }
 
-        /* Sidebar */
-        .sidebar { width: 260px; background: var(--sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 15px; }
-        .new-chat { border: 1px solid var(--border); padding: 12px; border-radius: 8px; cursor: pointer; text-align: left; font-size: 14px; transition: 0.2s; }
+        /* Sidebar - ascuns pe mobil */
+        .sidebar { width: 260px; background: var(--sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 20px; }
+        .new-chat { border: 1px solid var(--border); padding: 12px; border-radius: 8px; cursor: pointer; text-align: center; font-size: 14px; font-weight: 500; transition: 0.2s; }
         .new-chat:hover { background: #1a1a1a; }
 
         /* Main Area */
-        main { flex: 1; display: flex; flex-direction: column; position: relative; height: 100%; }
-        #chat-window { flex: 1; overflow-y: auto; padding-top: 20px; padding-bottom: 200px; scroll-behavior: smooth; }
+        main { flex: 1; display: flex; flex-direction: column; position: relative; height: 100%; width: 100%; }
+        #chat-window { flex: 1; overflow-y: auto; padding-top: 20px; padding-bottom: 220px; scroll-behavior: smooth; }
 
-        /* Rows & Bubbles */
-        .row { width: 100%; display: flex; padding: 24px 18%; animation: fadeIn 0.3s ease; }
+        /* Rows & Chat Bubbles */
+        .row { width: 100%; display: flex; padding: 24px 15%; animation: fadeIn 0.3s ease; }
         .user-row { justify-content: flex-end; }
-        .ai-row { background: rgba(255,255,255,0.02); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+        .ai-row { background: rgba(255,255,255,0.03); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
 
-        .bubble { max-width: 85%; line-height: 1.7; font-size: 16px; word-wrap: break-word; white-space: pre-wrap; }
-        .user-bubble { background: var(--user-bubble); padding: 12px 20px; border-radius: 20px; }
-        .ai-bubble { width: 100%; position: relative; padding-left: 45px; }
+        .bubble { max-width: 90%; line-height: 1.6; font-size: 16px; word-wrap: break-word; position: relative; }
+        .user-bubble { background: var(--user-bubble); padding: 12px 18px; border-radius: 18px; color: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+        .ai-bubble { width: 100%; padding-left: 45px; color: var(--text-secondary); }
         
         .ai-icon {
-            position: absolute; left: 0; top: 2px; width: 32px; height: 32px;
+            position: absolute; left: 0; top: 0; width: 32px; height: 32px;
             background: var(--accent); border-radius: 6px; display: flex; align-items: center;
-            justify-content: center; font-weight: 800; font-size: 14px; color: white;
+            justify-content: center; font-weight: bold; font-size: 14px; color: white;
         }
 
-        /* --- SISTEM DETECTIE COD --- */
-        .code-block { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; margin: 15px 0; overflow: hidden; }
-        .code-header { background: #2d2d2d; padding: 8px 15px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #aaa; font-family: sans-serif; }
-        .copy-btn { background: transparent; border: 1px solid #444; color: #ddd; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; transition: 0.2s; }
-        .copy-btn:hover { background: #444; color: white; }
-        .code-content { padding: 15px; font-family: 'Fira Code', monospace; overflow-x: auto; font-size: 14px; color: #e0e0e0; white-space: pre; background: #000; }
+        /* --- CODE FRAME --- */
+        .code-frame { background: #000000; border: 1px solid #333; border-radius: 10px; margin: 15px 0; overflow: hidden; width: 100%; }
+        .code-header { background: #2b2b2b; padding: 8px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; }
+        .code-header span { font-size: 12px; color: #aaa; text-transform: uppercase; font-weight: 600; }
+        .copy-btn { background: #444; color: #fff; border: none; padding: 5px 12px; border-radius: 5px; cursor: pointer; font-size: 11px; font-weight: 600; transition: 0.2s; }
+        .copy-btn:active { transform: scale(0.95); background: var(--accent); }
+        .code-body { padding: 15px; font-family: 'Fira Code', monospace; font-size: 14px; overflow-x: auto; color: #74f9ff; white-space: pre; line-height: 1.5; }
 
         /* Input Area */
-        .bottom-container { position: absolute; bottom: 0; width: 100%; background: linear-gradient(transparent, var(--bg) 40%); padding-bottom: 20px; }
-        .input-area { padding: 0 18% 10px; }
-        .input-wrapper { background: #212121; border: 1px solid var(--border); border-radius: 14px; padding: 12px 16px; display: flex; align-items: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        textarea { flex: 1; background: transparent; border: none; color: white; font-size: 16px; outline: none; resize: none; max-height: 200px; line-height: 1.5; }
-        .send-btn { background: var(--accent); border: none; color: white; width: 34px; height: 34px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .bottom-section { position: absolute; bottom: 0; width: 100%; background: linear-gradient(transparent, var(--bg) 30%); padding-bottom: 25px; }
+        .input-area { padding: 0 15% 10px; }
+        .input-wrapper { background: #212121; border: 1px solid var(--border); border-radius: 16px; padding: 14px 18px; display: flex; align-items: center; box-shadow: 0 8px 32px rgba(0,0,0,0.6); }
+        textarea { flex: 1; background: transparent; border: none; color: white; font-size: 16px; outline: none; resize: none; max-height: 180px; }
+        .send-btn { background: var(--accent); border: none; color: white; width: 36px; height: 36px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; }
         
-        .premium-banner { text-align: center; font-size: 12px; color: var(--accent); font-weight: 500; opacity: 0.8; padding: 5px; }
+        .premium-footer { text-align: center; font-size: 11px; color: var(--accent); font-weight: 600; letter-spacing: 0.5px; margin-top: 5px; text-transform: uppercase; }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; } }
 
+        /* Optimizare Mobil */
         @media (max-width: 768px) {
             .sidebar { display: none; }
-            .row { padding: 20px 5%; }
+            .row { padding: 20px 15px; }
             .input-area { padding: 0 10px 10px; }
+            .bubble { font-size: 15px; max-width: 95%; }
+            .code-body { font-size: 13px; }
         }
     </style>
 </head>
 <body>
 
 <aside class="sidebar">
-    <div class="new-chat" onclick="location.reload()">+ New Chat</div>
-    <div style="margin-top:auto; font-size:11px; color:gray; text-align:center; padding: 10px;">Diggolo-Standard v5.0</div>
+    <div class="new-chat" onclick="location.reload()">+ Nou Chat</div>
+    <div style="margin-top:auto; font-size:11px; color:gray; text-align:center;">Diggolo Standard v5.0</div>
 </aside>
 
 <main>
@@ -80,27 +84,27 @@
         <div class="row ai-row">
             <div class="bubble ai-bubble">
                 <div class="ai-icon">D</div>
-                Salut! Sunt <b>Diggolo AI 5.0 (Standard)</b>. Cum te pot ajuta astăzi?
+                Salut! Sunt <b>Diggolo AI 5.0 Standard</b>. Textul este acum optimizat pentru telefon. Cum te pot ajuta?
             </div>
         </div>
     </div>
 
-    <div class="bottom-container">
+    <div class="bottom-section">
         <div class="input-area">
             <div class="input-wrapper">
-                <textarea id="userInput" placeholder="Scrie un mesaj..." rows="1"></textarea>
+                <textarea id="userInput" placeholder="Mesaj către Diggolo..." rows="1"></textarea>
                 <button class="send-btn" onclick="askAI()">↑</button>
             </div>
         </div>
-        <div class="premium-banner">
-            ✨ În curând: Poți achiziționa varianta Premium (Scoasă din Beta)
+        <div class="premium-footer">
+            În curând: Varianta Premium (Scoatere din Beta)
         </div>
     </div>
 </main>
 
 <script>
     const API_KEY = "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"; 
-    let chatHistory = [{ role: "system", content: "Ești Diggolo AI 5.0 Standard. Răspunde clar, păstrând spațiile între cuvinte. Când scrii cod, folosește formatul cu trei backticks (```)." }];
+    let history = [{ role: "system", content: "Ești Diggolo AI 5.0. Păstrează spațiile între cuvinte. Când oferi cod, pune-l între ```." }];
 
     const chatWindow = document.getElementById('chat-window');
     const userInput = document.getElementById('userInput');
@@ -127,7 +131,7 @@
                 headers: { "Authorization": `Bearer ${API_KEY}`, "Content-Type": "application/json" },
                 body: JSON.stringify({
                     model: "llama-3.3-70b-versatile",
-                    messages: [...chatHistory, { role: "user", content: text }]
+                    messages: [...history, { role: "user", content: text }]
                 })
             });
 
@@ -135,9 +139,9 @@
             const reply = data.choices[0].message.content;
             
             aiBubble.innerHTML = '<div class="ai-icon">D</div>';
-            await typeEffect(aiBubble, reply);
+            await renderResponse(aiBubble, reply);
             
-            chatHistory.push({ role: "user", content: text }, { role: "assistant", content: reply });
+            history.push({ role: "user", content: text }, { role: "assistant", content: reply });
         } catch (e) {
             aiBubble.innerHTML += " Eroare de conexiune.";
         }
@@ -150,49 +154,53 @@
         bubble.className = `bubble ${type}-bubble`;
         if(type === 'ai') bubble.innerHTML = '<div class="ai-icon">D</div>';
         bubble.append(txt);
+        row.appendChild(bubble);
         chatWindow.appendChild(row);
         chatWindow.scrollTop = chatWindow.scrollHeight;
         return bubble;
     }
 
-    async function typeEffect(element, text) {
-        // Detectăm blocurile de cod prin delimitatorul ```
-        const segments = text.split(/```/);
+    async function renderResponse(element, fullText) {
+        const segments = fullText.split(/```/);
         
         for (let i = 0; i < segments.length; i++) {
-            if (i % 2 === 1) { // Segment de COD
-                const codeLines = segments[i].split('\n');
-                const lang = codeLines[0].trim() || "code";
-                const actualCode = codeLines.slice(1).join('\n').trim();
+            if (i % 2 === 1) { // BLOC DE COD
+                const codePart = segments[i].trim();
+                const firstLine = codePart.split('\n')[0];
+                const lang = (firstLine.length < 15) ? firstLine : "script";
+                const codeBody = firstLine.length < 15 ? codePart.substring(firstLine.length).trim() : codePart;
 
-                const codeWrapper = document.createElement('div');
-                codeWrapper.className = 'code-block';
-                codeWrapper.innerHTML = `
+                const frame = document.createElement('div');
+                frame.className = 'code-frame';
+                frame.innerHTML = `
                     <div class="code-header">
                         <span>${lang}</span>
-                        <button class="copy-btn" onclick="copyText(this)">Copy code</button>
+                        <button class="copy-btn" onclick="copyCode(this)">Copy code</button>
                     </div>
-                    <div class="code-content">${actualCode}</div>
+                    <div class="code-body">${codeBody}</div>
                 `;
-                element.appendChild(codeWrapper);
+                element.appendChild(frame);
                 chatWindow.scrollTop = chatWindow.scrollHeight;
-            } else { // Segment de TEXT NORMAL
+            } else { // TEXT NORMAL
                 const chars = Array.from(segments[i]);
                 for (let char of chars) {
-                    const node = document.createTextNode(char);
-                    element.appendChild(node);
+                    element.appendChild(document.createTextNode(char));
                     chatWindow.scrollTop = chatWindow.scrollHeight;
-                    await new Promise(r => setTimeout(r, 20)); // Viteză fluidă
+                    await new Promise(r => setTimeout(r, 15));
                 }
             }
         }
     }
 
-    function copyText(btn) {
+    function copyCode(btn) {
         const code = btn.parentElement.nextElementSibling.innerText;
         navigator.clipboard.writeText(code).then(() => {
             btn.innerText = "Copied!";
-            setTimeout(() => { btn.innerText = "Copy code"; }, 2000);
+            btn.style.background = "#10a37f";
+            setTimeout(() => { 
+                btn.innerText = "Copy code"; 
+                btn.style.background = "#444";
+            }, 2000);
         });
     }
 
